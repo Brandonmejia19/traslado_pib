@@ -1,0 +1,28 @@
+{
+    "name": "discoverydesign/filament-gaze",
+    "description": "See who's viewing a resource in Filament PHP.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "DiscoveryDesign\\FilamentGaze\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Discovery Design"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "filament/filament": "^3.0",
+        "spatie/laravel-package-tools": "^1.15.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DiscoveryDesign\\FilamentGaze\\FilamentGazeServiceProvider"
+            ]
+        }
+    }
+}
