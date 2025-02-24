@@ -46,7 +46,6 @@ class LoginListener
                 'user_agent' => $userAgent,
                 'login_at' => now(),
                 'login_successful' => true,
-                'location' => config('authentication-log.notifications.new-device.location') ? optional(geoip()->getLocation($ip))->toArray() : null,
             ]);
 
             if (! $known && ! $newUser && config('authentication-log.notifications.new-device.enabled')) {

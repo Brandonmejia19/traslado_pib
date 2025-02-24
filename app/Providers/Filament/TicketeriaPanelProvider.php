@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\TrasladoSecundarioResource24;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -23,7 +24,11 @@ use App\Filament\Resources\ElementosambResource;
 use App\Filament\Resources\HerramientasambResource;
 use App\Filament\Resources\AmbulanciaResource;
 use App\Filament\Resources\UserResource;
+use App\Filament\Resources\TrasladoSecundarioResource;
+use App\Filament\Resources\TrasladoSecundario24Resource;
+use App\Filament\Resources\TrasladoSecundarioPropiosResource;
 use App\Filament\Resources\ListaChequeoResource;
+use App\Filament\Resources\TrasladoResource;
 use Swis\Filament\Backgrounds\FilamentBackgroundsPlugin;
 use Swis\Filament\Backgrounds\ImageProviders\MyImages;
 use Vormkracht10\TwoFactorAuth\TwoFactorAuthPlugin;
@@ -31,6 +36,7 @@ use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
 use Vormkracht10\TwoFactorAuth\Http\Livewire\Auth\Login;
 use Rmsramos\Activitylog\ActivitylogPlugin;
+use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
 
 class TicketeriaPanelProvider extends PanelProvider
 {
@@ -39,6 +45,11 @@ class TicketeriaPanelProvider extends PanelProvider
         return $panel
             ->id('ticketeria')
             ->path('ticketeria')
+            ->darkMode(false)
+            ->sidebarWidth('15rem')
+            ->default()
+            ->sidebarCollapsibleOnDesktop()
+            ->sidebarFullyCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::hex('#206bc4'),
                 'danger' => Color::Red,
@@ -52,6 +63,7 @@ class TicketeriaPanelProvider extends PanelProvider
                 'orange' => Color::Orange,
                 'sidebar' => Color::hex('#fff'),
             ])
+            ->login()
             ->databaseNotifications()
             ->brandLogo(asset('images/logo222.svg'))
             ->favicon(asset('images/logocheques.svg'))
@@ -60,36 +72,33 @@ class TicketeriaPanelProvider extends PanelProvider
                     MyImages::make()
                         ->directory('images/backgrounds')
                 ),
-                FilamentEditProfilePlugin::make()
+                /*FilamentEditProfilePlugin::make()
                     ->slug('mi-perfil')
                     ->setTitle('Mi Perfil')
                     ->setNavigationLabel('Perfil')
-                    ->setNavigationGroup('Mantenimiento')
                     ->setIcon('heroicon-o-user')
                     ->shouldShowDeleteAccountForm(false)
                     ->shouldShowAvatarForm(
                         value: true,
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png|max:3024' //only accept jpeg and png files with a maximum size of 1MB
-                    ),
-                FilamentSpatieRolesPermissionsPlugin::make(),
-                ActivitylogPlugin::make()->navigationGroup('Mantenimiento')->label('Registro')
-                    ->pluralLabel('Registros')->authorize(
-                        fn() => auth()->user()->cargo === 'Administrador'
-                    ),
+                    ),*/
 
-                /*       TwoFactorAuthPlugin::make()
-                       ->forced(),*/
             ])
             ->discoverResources(in: app_path('Filament/Ticketeria/Resources'), for: 'App\\Filament\\Ticketeria\\Resources')
             ->discoverPages(in: app_path('Filament/Ticketeria/Pages'), for: 'App\\Filament\\Ticketeria\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ->resources([
+                TrasladoSecundarioResource::class,
+                TrasladoSecundario24Resource::class,
+                TrasladoSecundarioPropiosResource::class,
+            ])
             ->discoverWidgets(in: app_path('Filament/Ticketeria/Widgets'), for: 'App\\Filament\\Ticketeria\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

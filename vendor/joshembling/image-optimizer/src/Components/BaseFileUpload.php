@@ -21,7 +21,6 @@ use Throwable;
 
 class BaseFileUpload extends Field
 {
-    use Concerns\HasUploadingMessage;
 
     /**
      * @var array<string> | Arrayable | Closure | null

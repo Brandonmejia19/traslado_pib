@@ -39,17 +39,17 @@ class AuthenticationLogResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __('filament-authentication-log::filament-authentication-log.navigation.group');
+        return __('Seguridad');
     }
 
     public static function getLabel(): string
     {
-        return __('filament-authentication-log::filament-authentication-log.navigation.authentication-log.label');
+        return __('Registros de Autenticación');
     }
 
     public static function getPluralLabel(): string
     {
-        return __('filament-authentication-log::filament-authentication-log.navigation.authentication-log.plural-label');
+        return __('Registros de Autenticación');
     }
 
     public static function form(Form $form): Form
@@ -74,17 +74,17 @@ class AuthenticationLogResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('authenticatable')
-                    ->label(trans('filament-authentication-log::filament-authentication-log.column.authenticatable'))
+                    ->label('Usuario')
                     ->formatStateUsing(function (?string $state, Model $record) {
-                        if (! $record->authenticatable_id) {
+                        if (!$record->authenticatable_id) {
                             return new HtmlString('&mdash;');
                         }
 
-                        return new HtmlString('<a href="'.route('filament.'.Filament::getCurrentPanel()->getId().'.resources.'.Str::plural((Str::lower(class_basename($record->authenticatable::class)))).'.edit', ['record' => $record->authenticatable_id]).'" class="inline-flex items-center justify-center hover:underline focus:outline-none focus:underline filament-tables-link text-primary-600 hover:text-primary-500 text-sm font-medium filament-tables-link-action">'.class_basename($record->authenticatable::class).'</a>');
+                        return new HtmlString('<a href="' . route('filament.' . Filament::getCurrentPanel()->getId() . '.resources.' . Str::plural((Str::lower(class_basename($record->authenticatable::class)))) . '.edit', ['record' => $record->authenticatable_id]) . '" class="inline-flex items-center justify-center hover:underline focus:outline-none focus:underline filament-tables-link text-primary-600 hover:text-primary-500 text-sm font-medium filament-tables-link-action">' . class_basename($record->authenticatable::class) . '</a>');
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ip_address')
-                    ->label(trans('filament-authentication-log::filament-authentication-log.column.ip_address'))
+                    ->label('Dirección IP')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user_agent')
@@ -102,21 +102,21 @@ class AuthenticationLogResource extends Resource
                         return $state;
                     }),
                 Tables\Columns\TextColumn::make('login_at')
-                    ->label(trans('filament-authentication-log::filament-authentication-log.column.login_at'))
                     ->dateTime()
+                    ->placeholder('N/A')
+                    ->label('Hora de Ingreso')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('login_successful')
-                    ->label(trans('filament-authentication-log::filament-authentication-log.column.login_successful'))
+                    ->label('Ingreso Exitoso')
                     ->boolean()
+                    ->placeholder('N/A')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('logout_at')
-                    ->label(trans('filament-authentication-log::filament-authentication-log.column.logout_at'))
+                    ->label('Salida')
                     ->dateTime()
+                    ->placeholder('N/A')
                     ->sortable(),
-                Tables\Columns\IconColumn::make('cleared_by_user')
-                    ->label(trans('filament-authentication-log::filament-authentication-log.column.cleared_by_user'))
-                    ->boolean()
-                    ->sortable(),
+
                 //Tables\Columns\TextColumn::make('location'),
             ])
             ->actions([
@@ -125,7 +125,7 @@ class AuthenticationLogResource extends Resource
             ->filters([
                 Filter::make('login_successful')
                     ->toggle()
-                    ->query(fn (Builder $query): Builder => $query->where('login_successful', true)),
+                    ->query(fn(Builder $query): Builder => $query->where('login_successful', true)),
                 Filter::make('login_at')
                     ->form([
                         DatePicker::make('login_from'),
@@ -135,16 +135,14 @@ class AuthenticationLogResource extends Resource
                         return $query
                             ->when(
                                 $data['login_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('login_at', '>=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('login_at', '>=', $date),
                             )
                             ->when(
                                 $data['login_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('login_at', '<=', $date),
+                                fn(Builder $query, $date): Builder => $query->whereDate('login_at', '<=', $date),
                             );
                     }),
-                Filter::make('cleared_by_user')
-                    ->toggle()
-                    ->query(fn (Builder $query): Builder => $query->where('cleared_by_user', true)),
+
             ]);
     }
 

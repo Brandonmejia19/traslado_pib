@@ -16,10 +16,22 @@ use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 use Althinect\FilamentSpatieRolesPermissions\Concerns\HasSuperAdmin;
-class User extends Authenticatable implements FilamentUser,LdapAuthenticatable
-{
-    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable,AuthenticatesWithLdap, HasRoles,HasSuperAdmin;
+use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
+class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
+{
+    use HasApiTokens,LogsActivity, AuthenticationLoggable, HasFactory, Notifiable, TwoFactorAuthenticatable, AuthenticatesWithLdap, HasRoles, HasSuperAdmin;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'name',
+                'email',
+                'user'
+            ]);
+    }
     /**
      * The attributes that are mass assignable.
      *
@@ -29,6 +41,7 @@ class User extends Authenticatable implements FilamentUser,LdapAuthenticatable
         'name',
         'email',
         'password',
+        'user'
     ];
 
     /**

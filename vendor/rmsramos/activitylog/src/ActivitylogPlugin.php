@@ -79,7 +79,7 @@ class ActivitylogPlugin implements Plugin
 
     public function getNavigationGroup(): ?string
     {
-        return $this->evaluate($this->navigationGroup) ?? config('filament-activitylog.resources.navigation_group');
+        return 'Seguridad';
     }
 
     public function getNavigationIcon(): ?string
