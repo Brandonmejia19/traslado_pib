@@ -437,6 +437,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                             ->schema([
                                 Forms\Components\ToggleButtons::make('tipo_paciente')
                                     ->reactive()
+                                    ->default('Estable')
                                     ->options([
                                         'Estable' => 'Estable',
                                         'Critico' => 'Critico',
@@ -608,6 +609,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->prefixicon('healthicons-o-oxygen-tank')
                                     ->placeholder('Fio2'),
                                 Forms\Components\ToggleButtons::make('requerimientos_oxigenoterapia')
+                                    ->default('NO')
                                     ->options([
                                         'NO' => 'NO',
                                         'Canula Nasal' => 'Canula Nasal',
@@ -640,6 +642,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                             ->schema([
                                 Forms\Components\ToggleButtons::make('asistencia_ventilatoria')
                                     ->reactive()
+                                    ->default('NO')
                                     ->label('Asistencia Ventilatoria (VM)')
                                     ->options([
                                         'NO' => 'NO',

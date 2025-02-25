@@ -436,6 +436,7 @@ class TrasladoSecundario24Resource extends Resource
                             ->schema([
                                 Forms\Components\ToggleButtons::make('tipo_paciente')
                                     ->reactive()
+                                    ->default('Estable')
                                     ->options([
                                         'Estable' => 'Estable',
                                         'Critico' => 'Critico',
@@ -607,6 +608,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->prefixicon('healthicons-o-oxygen-tank')
                                     ->placeholder('Fio2'),
                                 Forms\Components\ToggleButtons::make('requerimientos_oxigenoterapia')
+                                    ->default('NO')
                                     ->options([
                                         'NO' => 'NO',
                                         'Canula Nasal' => 'Canula Nasal',
@@ -639,6 +641,7 @@ class TrasladoSecundario24Resource extends Resource
                             ->schema([
                                 Forms\Components\ToggleButtons::make('asistencia_ventilatoria')
                                     ->reactive()
+                                    ->default('NO')
                                     ->label('Asistencia Ventilatoria (VM)')
                                     ->options([
                                         'NO' => 'NO',
@@ -866,7 +869,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->default('N/A')
-                    ->sortable(),
+                    ->sortable(), 
                 Tables\Columns\TextColumn::make('hora')
                     ->default('N/A')
                     ->sortable()
