@@ -40,9 +40,16 @@ class UserResource extends Resource
                                 ->required()
                                 ->maxLength(255),
                             Forms\Components\Select::make('roles')->multiple()->relationship('roles', 'name'),
+                            Forms\Components\Select::make('cargo')
+                                ->options([
+                                    'Administrador' => 'Administrador',
+                                    'Tecnico Flota' => 'Tecnico Flota',
+                                    'Operador' => 'Operador',
+                                    'Médico' => 'Médico',
+                                    'Gestor' => 'Gestor',
+                                ]),
                             Forms\Components\TextInput::make('email')
                                 ->email()
-                                ->default('Visor')
                                 ->required()
                                 ->maxLength(255),
                             /* Forms\Components\TextInput::make('password')
@@ -68,6 +75,10 @@ class UserResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
+                    ->placeholder('Vacío')
+                    ->sortable()
+                    ->searchable(),
+                    Tables\Columns\TextColumn::make('cargo')
                     ->placeholder('Vacío')
                     ->sortable()
                     ->searchable(),

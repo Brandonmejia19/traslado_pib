@@ -18,7 +18,7 @@ class ListTrasladoSecundarios extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
-        ];
+            
+               ];
     }
 }

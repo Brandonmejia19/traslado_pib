@@ -5,7 +5,7 @@ namespace App\Filament\Resources\TrasladoSecundario24Resource\Pages;
 use App\Filament\Resources\TrasladoSecundario24Resource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Resources\TrasladoSecundarioResource\Widgets\TrasladosSecundarios;
+use App\Filament\Resources\TrasladoSecundario24Resource\Widgets\TrasladosSecundarios24;
 
 class ListTrasladoSecundario24s extends ListRecords
 {
@@ -13,7 +13,7 @@ class ListTrasladoSecundario24s extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            TrasladosSecundarios::class,
+            TrasladosSecundarios24::class,
         ];
     }
     protected function getHeaderActions(): array

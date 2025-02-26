@@ -13,7 +13,6 @@ class EditTrasladoSecundario24 extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
         ];
     }
 }

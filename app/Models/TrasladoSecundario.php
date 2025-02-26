@@ -29,6 +29,7 @@ class TrasladoSecundario extends Model
 
                 'nombre_medico_solicitante',
                 'telefono_medico_solicitante',
+                'jvpe_medico_entrega',
 
                 'destino_traslado',
                 'destino_institucion',
@@ -72,8 +73,10 @@ class TrasladoSecundario extends Model
 
                 'asistencia_ventilatoria',
                 'bombas_infusion',
-                'servicio',
-                'numero_cama',
+                'servicio_origen',
+                'numero_cama_orige',
+                'servicio_destino',
+                'numero_cama_destino',
 
                 ///NUEVOS DATOS
                 'prioridad',

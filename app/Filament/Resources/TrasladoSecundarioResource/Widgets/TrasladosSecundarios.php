@@ -16,49 +16,45 @@ class TrasladosSecundarios extends BaseWidget
         Carbon::setLocale('es');
         $startDate = Carbon::now()->startOfDay()->toDateString();
         $endDate = Carbon::now()->startOfDay()->toDateString();
+        $venticuatrostart = Carbon::now()->subDay();
 
-        $totaldia = TrasladoSecundario::query()
-            ->when($startDate, fn($query) => $query->whereDate('created_at', '>=', $startDate))
-            ->when($endDate, fn($query) => $query->whereDate('created_at', '<=', $endDate))
+        $total = TrasladoSecundario::query()
+            ->where('estado', 'Finalizado')
             ->count();
 
-        $totalactivos = TrasladoSecundario::query()
-            ->when($startDate, fn($query) => $query->whereDate('created_at', '>=', $startDate))
-            ->when($endDate, fn($query) => $query->whereDate('created_at', '<=', $endDate))
-            ->where('estado', operator: 'En curso')
+        $totalestables = TrasladoSecundario::query()
+            ->where('estado', 'Finalizado')
+            ->where('tipo_paciente', operator: 'Estable')
             ->count();
 
-        $totalpendientes = TrasladoSecundario::query()
-            ->when($startDate, fn($query) => $query->whereDate('created_at', '>=', $startDate))
-            ->when($endDate, fn($query) => $query->whereDate('created_at', '<=', $endDate))
-            ->whereNull('ambulancia')
+        $totalcriticos = TrasladoSecundario::query()
+            ->where('estado', 'Finalizado')
+            ->where('tipo_paciente', operator: 'Critico')
             ->count();
 
-        $totalcriticospendientes = TrasladoSecundario::query()
-            ->when($startDate, fn($query) => $query->whereDate('created_at', '>=', $startDate))
-            ->when($endDate, fn($query) => $query->whereDate('created_at', '<=', $endDate))
-            ->where('tipo_paciente', 'Critico')
-            ->whereNull('ambulancia')
+        $totaltransporte = TrasladoSecundario::query()
+            ->where('estado', 'Finalizado')
+            ->where('asunto_traslado', 'Trasporte de Paciente')
             ->count();
 
         return [
-            Stat::make('Pendientes de asignación de recurso', $totalcriticospendientes)
-                ->description('Traslados críticos pendientes de asignación de recurso')
+            Stat::make('Traslado de Pacientes Criticos - Finalizados', $totalcriticos)
+              //  ->description('Traslados críticos pendientes de asignación de recurso')
                 ->chartColor('danger')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->descriptionIcon('healthicons-o-rural-post'),
-            Stat::make('Traslados pendientes de asignación de recurso', $totalpendientes)
-                ->description('Traslados Programados/Pendientes de asignacion de recurso')
+            Stat::make('Traslado de Pacientes Estables - Finalizados', $totalestables)
+              //  ->description('Traslados Programados/Pendientes de asignacion de recurso')
                 ->chartColor('danger')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->descriptionIcon('healthicons-o-rural-post'),
-            Stat::make('Traslados Activos', $totalactivos)
-                ->description('Traslados En curso')
+            Stat::make('Total de Transporte de pacientes - Finalizados', $totaltransporte)
+             //   ->description('Traslados En curso')
                 ->chartColor('primary')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->descriptionIcon('healthicons-o-ambulance'),
-            Stat::make('Traslados en el día', $totaldia)
-                ->description('Cantidad de Traslados Registrados el día: ' . Carbon::now()->format('d/m/Y'))
+            Stat::make('Total de Traslados Finalizados', $total)
+             //   ->description('Cantidad de Traslados Registrados el día: ' . Carbon::now()->format('d/m/Y'))
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->chartColor('success')
                 ->descriptionIcon('healthicons-o-hospitalized'),

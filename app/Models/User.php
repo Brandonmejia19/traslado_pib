@@ -22,14 +22,15 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
 {
-    use HasApiTokens,LogsActivity, AuthenticationLoggable, HasFactory, Notifiable, TwoFactorAuthenticatable, AuthenticatesWithLdap, HasRoles, HasSuperAdmin;
+    use HasApiTokens, LogsActivity, AuthenticationLoggable, HasFactory, Notifiable, TwoFactorAuthenticatable, AuthenticatesWithLdap, HasRoles, HasSuperAdmin;
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly([
                 'name',
                 'email',
-                'user'
+                'user',
+                'cargo',
             ]);
     }
     /**
@@ -41,7 +42,8 @@ class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
         'name',
         'email',
         'password',
-        'user'
+        'user',
+        'cargo',
     ];
 
     /**
@@ -55,8 +57,10 @@ class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
     ];
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        // Implement your logic to determine if the user can access the panel
+
+
         return true;
+
     }
     public function getLdapDomainColumn(): string
     {
