@@ -73,7 +73,7 @@ class AdminPanelProvider extends PanelProvider
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png|max:3024' //only accept jpeg and png files with a maximum size of 1MB
                     ),*/
-                FilamentErrorPagesPlugin::make(),
+              //  FilamentErrorPagesPlugin::make(),
                 FilamentAuthenticationLogPlugin::make(),
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 ActivitylogPlugin::make()->navigationGroup('Mantenimiento')->label('Registro')

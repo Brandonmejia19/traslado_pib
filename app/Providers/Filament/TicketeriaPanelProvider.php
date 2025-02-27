@@ -69,7 +69,7 @@ class TicketeriaPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo222.svg'))
             ->favicon(asset('images/logocheques.svg'))
             ->plugins([
-                FilamentErrorPagesPlugin::make(),
+             //   FilamentErrorPagesPlugin::make(),
                 FilamentBackgroundsPlugin::make()->imageProvider(
                     MyImages::make()
                         ->directory('images/backgrounds')
