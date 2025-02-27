@@ -12,20 +12,7 @@ use Filament\Support\Enums\IconPosition;
 class ListTrasladoSecundario24s extends ListRecords
 {
     protected static string $resource = TrasladoSecundario24Resource::class;
-    public function getTabs(): array
-    {
-        return [
-            'Todos' => Tab::make(),
-            'Prioridad 1' => Tab::make()
-                ->modifyQueryUsing(callback: fn(Builder $query) => $query->where('prioridad', 1)),
-            'Prioridad 2' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('prioridad', 2)),
-            'Prioridad 3' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('prioridad', 3)),
-            'Prioridad 4' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('prioridad', 4)),
-        ];
-    }
+   
     protected function getHeaderWidgets(): array
     {
         return [

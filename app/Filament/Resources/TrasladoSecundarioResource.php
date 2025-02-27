@@ -61,7 +61,7 @@ class TrasladoSecundarioResource extends Resource
                     ->label('Cerrar Caso')
                     ->requiresConfirmation() // Para que se muestre un modal de confirmación
                     ->modalHeading('Cerrar Caso')
-                    ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
+                   // ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
                     ->form([
                         Forms\Components\Textarea::make('justificacion_cierre')
                             ->label('Justificación de Cierre')
@@ -109,6 +109,7 @@ class TrasladoSecundarioResource extends Resource
                                     ->placeholder('Telefono Origen')
                                     ->required()
                                     ->columnspan(1)
+                                    ->mask('9999-9999')
                                     ->numeric()
                                     ->prefixicon('healthicons-o-call-centre')
                                     ->maxLength(255),
@@ -219,6 +220,7 @@ class TrasladoSecundarioResource extends Resource
                                 Forms\Components\TextInput::make('telefono_medico_solicitante')
                                     ->prefixicon('healthicons-o-phone')
                                     ->label('Teléfono del Médico Solicitante')
+                                    ->mask('9999-9999')
                                     ->tel()
                                     ->columnSpan(2)
                                     ->placeholder('0000-0000')
@@ -442,6 +444,7 @@ class TrasladoSecundarioResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('telefono_medico_recibe')
                                     ->tel()->columnspan(1)
+                                    ->mask('9999-9999')
                                     ->label('Teléfono del Médico que Recibe')
                                     ->placeholder('0000-0000')
                                     ->prefixicon('healthicons-o-phone')

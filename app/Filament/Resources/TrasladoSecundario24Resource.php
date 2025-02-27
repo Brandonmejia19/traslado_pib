@@ -37,6 +37,7 @@ class TrasladoSecundario24Resource extends Resource
     protected static ?string $navigationGroup = 'Casos';
     protected static ?string $label = 'Traslados 24H';
 
+
     public static function form(Form $form): Form
     {
         return $form
@@ -56,7 +57,7 @@ class TrasladoSecundario24Resource extends Resource
                             ->label('Cerrar Caso')
                             ->requiresConfirmation() // Para que se muestre un modal de confirmación
                             ->modalHeading('Cerrar Caso')
-                            ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
+                          //  ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
                             ->form([
                                 Forms\Components\Textarea::make('justificacion_cierre')
                                     ->label('Justificación de Cierre')
@@ -104,6 +105,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->placeholder('Telefono Origen')
                                     ->required()
                                     ->columnspan(1)
+                                    ->mask('99999999')
                                     ->numeric()
                                     ->prefixicon('healthicons-o-call-centre')
                                     ->maxLength(255),
@@ -213,6 +215,7 @@ class TrasladoSecundario24Resource extends Resource
 
                                 Forms\Components\TextInput::make('telefono_medico_solicitante')
                                     ->prefixicon('healthicons-o-phone')
+                                    ->mask('99999999')
                                     ->label('Teléfono del Médico Solicitante')
                                     ->tel()
                                     ->columnSpan(2)
@@ -437,6 +440,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('telefono_medico_recibe')
                                     ->tel()->columnspan(1)
+                                    ->mask('99999999')
                                     ->label('Teléfono del Médico que Recibe')
                                     ->placeholder('0000-0000')
                                     ->prefixicon('healthicons-o-phone')
@@ -834,6 +838,7 @@ class TrasladoSecundario24Resource extends Resource
     }
 
 
+
     public static function table(Table $table): Table
     {
         return $table
@@ -1173,9 +1178,18 @@ class TrasladoSecundario24Resource extends Resource
             ])
             ->paginated([10, 25, 50, 100])
             ->actions([
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SixExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
-                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SixExtraLarge)->iconButton()->color('primary')
-                    ->hidden(fn($record) => $record->estado === 'Finalizado'),
+
+                //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SixExtraLarge)
+                    ->modalWidth(
+                        MaxWidth::SixExtraLarge
+                    )
+                    ->iconButton()
+                    ->hidden(fn($record) => $record->estado === 'Finalizado')
+                    ->modalIcon('healthicons-o-mobile-clinic')
+                    ->color('primary')
+                    ->modalAlignment(Alignment::Center)
+                    ->modalHeading('Traslados Secundarios - Edición'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
             ], position: ActionsPosition::BeforeCells)
             ->defaultGroup('estado')
@@ -1203,7 +1217,8 @@ class TrasladoSecundario24Resource extends Resource
         return [
             'index' => Pages\ListTrasladoSecundario24s::route('/'),
             //'create' => Pages\CreateTrasladoSecundario24::route('/create'),
-            //'edit' => Pages\EditTrasladoSecundario24::route('/{record}/edit'),
+            //
+            'edit' => Pages\EditTrasladoSecundario24::route('/{record}/edit'),
         ];
     }
 }

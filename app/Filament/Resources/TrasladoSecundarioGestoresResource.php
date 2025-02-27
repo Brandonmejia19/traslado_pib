@@ -45,68 +45,69 @@ class TrasladoSecundarioGestoresResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make(fn(callable $get) => 'Información de llamada - ' . ($get('correlativo') ?? 'Sin correlativo') . ' - '.($get('estado') ?? 'En creación'))
-                ->icon('healthicons-o-call-centre')
-                ->headerActions([
-                    Action::make('cerrarCaso')
-                    ->hidden(
-                        fn(callable $get) =>
-                        $get('estado') == 'Finalizado' ||
-                        !in_array(auth()->user()->cargo, ['Doctor', 'Administrador'])
-                    )
-                    //->disabled()
-                    ->icon('heroicon-m-x-mark')
-                    ->color('danger')
-                    ->label('Cerrar Caso')
-                    ->requiresConfirmation() // Para que se muestre un modal de confirmación
-                    ->modalHeading('Cerrar Caso')
-                    ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
-                    ->form([
-                        Forms\Components\Textarea::make('justificacion_cierre')
-                            ->label('Justificación de Cierre')
-                            ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
-                            ->required(),
-                        Forms\Components\Select::make('razon_cierre')
-                            ->options([
-                                'Resuelto' => 'Resuelto',
-                                'No Resuelto' => 'No Resuelto',
-                                'Cancelado' => 'Cancelado',
-                                'Otro' => 'Otro',
+                Forms\Components\Section::make(fn(callable $get) => 'Información de llamada - ' . ($get('correlativo') ?? 'Sin correlativo') . ' - ' . ($get('estado') ?? 'En creación'))
+                    ->icon('healthicons-o-call-centre')
+                    ->headerActions([
+                        Action::make('cerrarCaso')
+                            ->hidden(
+                                fn(callable $get) =>
+                                $get('estado') == 'Finalizado' ||
+                                !in_array(auth()->user()->cargo, ['Doctor', 'Administrador'])
+                            )
+                            //->disabled()
+                            ->icon('heroicon-m-x-mark')
+                            ->color('danger')
+                            ->label('Cerrar Caso')
+                            ->requiresConfirmation() // Para que se muestre un modal de confirmación
+                            ->modalHeading('Cerrar Caso')
+                            ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
+                            ->form([
+                                Forms\Components\Textarea::make('justificacion_cierre')
+                                    ->label('Justificación de Cierre')
+                                    ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
+                                    ->required(),
+                                Forms\Components\Select::make('razon_cierre')
+                                    ->options([
+                                        'Resuelto' => 'Resuelto',
+                                        'No Resuelto' => 'No Resuelto',
+                                        'Cancelado' => 'Cancelado',
+                                        'Otro' => 'Otro',
+                                    ])
+                                    ->label('Razón de Cierre')
+                                    ->required(),
+                                Forms\Components\TextInput::make('usuario_cierre')
+                                    ->label('Usuario')
+                                    ->default(Auth::user()->name)
+                                    ->disabled(), // Este campo se muestra solo para información, no editable
                             ])
-                            ->label('Razón de Cierre')
-                            ->required(),
-                        Forms\Components\TextInput::make('usuario_cierre')
-                            ->label('Usuario')
-                            ->default(Auth::user()->name)
-                            ->disabled(), // Este campo se muestra solo para información, no editable
-                    ])
-                    ->action(function (array $data, $record) {
-                        if (!$record) {
-                            Notification::make()
-                                ->title('Error')
-                                ->body('No se encontró el caso / Caso aun no creado.')
-                                ->danger()
-                                ->send();
-                            return;
-                        }
+                            ->action(function (array $data, $record) {
+                                if (!$record) {
+                                    Notification::make()
+                                        ->title('Error')
+                                        ->body('No se encontró el caso / Caso aun no creado.')
+                                        ->danger()
+                                        ->send();
+                                    return;
+                                }
 
-                        // Actualizar el registro con los datos de cierre
-                        $record->update([
-                            'estado' => 'Finalizado',
-                            'justificacion_cierre' => $data['justificacion_cierre'],
-                            'razon_cierre' => $data['razon_cierre'],
-                            'usuario_cierre' => Auth::user()->name, // Usuario autenticado
-                        ]);
-                        Notification::make()->title('Caso cerrado correctamente')->success()->send();
-                    }),
-                ])
-                ->schema(components: [
+                                // Actualizar el registro con los datos de cierre
+                                $record->update([
+                                    'estado' => 'Finalizado',
+                                    'justificacion_cierre' => $data['justificacion_cierre'],
+                                    'razon_cierre' => $data['razon_cierre'],
+                                    'usuario_cierre' => Auth::user()->name, // Usuario autenticado
+                                ]);
+                                Notification::make()->title('Caso cerrado correctamente')->success()->send();
+                            }),
+                    ])
+                    ->schema(components: [
                         Forms\Components\Fieldset::make('Información de Solicitud de Traslado')
                             ->columns(4)
                             ->schema([
                                 Forms\Components\TextInput::make('numero_llamada')
                                     ->placeholder('Telefono Origen')
                                     ->required()
+                                    ->mask('9999-9999')
                                     ->columnspan(1)
                                     ->numeric()
                                     ->prefixicon('healthicons-o-call-centre')
@@ -150,7 +151,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                             ])
                     ]),
                 Forms\Components\Section::make('Traslado Secundario')
-                ->icon('healthicons-o-ambulance')
+                    ->icon('healthicons-o-ambulance')
                     ->schema([
                         Forms\Components\Fieldset::make('Información de Solicitud de Traslado')
                             ->columns(6)
@@ -217,6 +218,7 @@ class TrasladoSecundarioGestoresResource extends Resource
 
                                 Forms\Components\TextInput::make('telefono_medico_solicitante')
                                     ->prefixicon('healthicons-o-phone')
+                                    ->mask('9999-9999')
                                     ->label('Teléfono del Médico Solicitante')
                                     ->tel()
                                     ->columnSpan(2)
@@ -322,7 +324,7 @@ class TrasladoSecundarioGestoresResource extends Resource
 
 
                                 Forms\Components\Fieldset::make('Lugar del Hospital de Origen de Traslado')
-                                   // ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
+                                    // ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
                                     ->schema([
                                         Forms\Components\Select::make('servicio_origen')
                                             ->prefixicon('healthicons-o-health-worker-form')
@@ -400,7 +402,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->hidden(fn(callable $get) => !in_array($get('destino_institucion'), ['Domicilio', 'Otro']))
                                     ->prefixicon('healthicons-o-hospital')
                                     ->reactive(),
-                                    Forms\Components\Fieldset::make('Lugar del Hospital hacia a donde será traladado')
+                                Forms\Components\Fieldset::make('Lugar del Hospital hacia a donde será traladado')
                                     ->schema([
                                         Forms\Components\Select::make('servicio_destino')
                                             ->prefixicon('healthicons-o-health-worker-form')
@@ -441,6 +443,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('telefono_medico_recibe')
                                     ->tel()->columnspan(1)
+                                    ->mask('9999-9999')
                                     ->label('Teléfono del Médico que Recibe')
                                     ->placeholder('0000-0000')
                                     ->prefixicon('healthicons-o-phone')
@@ -1180,7 +1183,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                     ])
                     ->label('Estado Paciente'),
 
-                ])
+            ])
             ->paginated([10, 25, 50, 100])
             ->actions([
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SixExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),

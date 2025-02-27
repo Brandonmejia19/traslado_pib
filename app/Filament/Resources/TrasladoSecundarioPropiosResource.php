@@ -27,6 +27,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Enums\ActionsPosition;
+use Filament\Support\RawJs;
 
 class TrasladoSecundarioPropiosResource extends Resource
 {
@@ -54,7 +55,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                             ->label('Cerrar Caso')
                             ->requiresConfirmation() // Para que se muestre un modal de confirmación
                             ->modalHeading('Cerrar Caso')
-                            ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
+                          //  ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
                             ->form([
                                 Forms\Components\Textarea::make('justificacion_cierre')
                                     ->label('Justificación de Cierre')
@@ -102,6 +103,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->placeholder('Telefono Origen')
                                     ->required()
                                     ->columnspan(1)
+                                    ->mask('99999999')
                                     ->numeric()
                                     ->prefixicon('healthicons-o-call-centre')
                                     ->maxLength(255),
@@ -211,6 +213,7 @@ class TrasladoSecundarioPropiosResource extends Resource
 
                                 Forms\Components\TextInput::make('telefono_medico_solicitante')
                                     ->prefixicon('healthicons-o-phone')
+                                    ->mask('99999999')
                                     ->label('Teléfono del Médico Solicitante')
                                     ->tel()
                                     ->columnSpan(2)
@@ -435,6 +438,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('telefono_medico_recibe')
                                     ->tel()->columnspan(1)
+                                    ->mask('99999999')
                                     ->label('Teléfono del Médico que Recibe')
                                     ->placeholder('0000-0000')
                                     ->prefixicon('healthicons-o-phone')
@@ -1173,9 +1177,6 @@ class TrasladoSecundarioPropiosResource extends Resource
             ->paginated([10, 25, 50, 100])
             ->actions([
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SixExtraLarge)
-                    ->modalWidth(
-                        MaxWidth::SixExtraLarge
-                    )
                     ->iconButton()
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->icon('heroicon-o-eye')->color('warning')
@@ -1218,7 +1219,7 @@ class TrasladoSecundarioPropiosResource extends Resource
         return [
             'index' => Pages\ListTrasladoSecundarioPropios::route('/'),
             //  'create' => Pages\CreateTrasladoSecundarioPropios::route('/create'),
-            // 'edit' => Pages\EditTrasladoSecundarioPropios::route('/{record}/edit'),
+            'edit' => Pages\EditTrasladoSecundarioPropios::route('/{record}/edit'),
         ];
     }
 }
