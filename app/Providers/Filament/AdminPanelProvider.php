@@ -33,6 +33,7 @@ use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugi
 use Vormkracht10\TwoFactorAuth\Http\Livewire\Auth\Login;
 use Rmsramos\Activitylog\ActivitylogPlugin;
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
+use Cmsmaxinc\FilamentErrorPages\FilamentErrorPagesPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -45,7 +46,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->darkMode(false)
+            //->darkMode(false)
             ->colors([
                 'primary' => Color::hex('#206bc4'),
                 'danger' => Color::Red,
@@ -72,6 +73,7 @@ class AdminPanelProvider extends PanelProvider
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png|max:3024' //only accept jpeg and png files with a maximum size of 1MB
                     ),*/
+                FilamentErrorPagesPlugin::make(),
                 FilamentAuthenticationLogPlugin::make(),
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 ActivitylogPlugin::make()->navigationGroup('Mantenimiento')->label('Registro')

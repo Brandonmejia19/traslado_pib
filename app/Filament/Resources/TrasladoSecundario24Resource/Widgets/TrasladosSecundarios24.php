@@ -24,22 +24,21 @@ class TrasladosSecundarios24 extends BaseWidget
             ->count();
 
         $totalactivos = TrasladoSecundario::query()
-            ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '>=', $venticuatrostart))
-            ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '<=', $venticuatrostart))
+            
             ->orWhere('estado', operator: 'En curso')
             ->count();
 
         $totalpendientes = TrasladoSecundario::query()
-            ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '>=', $venticuatrostart))
-            ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '<=', $venticuatrostart))
+            ->orWhere('estado', operator: 'En curso')
+
             ->whereNull('ambulancia')
             ->count();
 
         $totalcriticospendientes = TrasladoSecundario::query()
-         //   ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '>=', $venticuatrostart))
-           // ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '<=', $venticuatrostart))
+            //   ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '>=', $venticuatrostart))
+            // ->when($venticuatrostart, fn($query) => $query->whereDate('created_at', '<=', $venticuatrostart))
             ->where('tipo_paciente', 'Critico')
-         //   ->where('estado','En curso')
+            //   ->where('estado','En curso')
             ->whereNull('ambulancia')
             ->count();
 

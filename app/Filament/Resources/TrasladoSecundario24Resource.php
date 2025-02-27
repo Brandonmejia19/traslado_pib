@@ -25,6 +25,9 @@ use Filament\Forms\Components\Actions;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\ActionGroup;
 use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\MaxWidth;
+use Filament\Tables\Enums\ActionsPosition;
+
 class TrasladoSecundario24Resource extends Resource
 {
     protected static ?string $model = TrasladoSecundario::class;
@@ -38,7 +41,61 @@ class TrasladoSecundario24Resource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Información de llamada')
+                Forms\Components\Section::make(fn(callable $get) => 'Información de llamada - ' . ($get('correlativo') ?? 'Sin correlativo') . ' - ' . ($get('estado') ?? 'En creación'))
+                    ->icon('healthicons-o-call-centre')
+                    ->headerActions([
+                        Action::make('cerrarCaso')
+                            ->hidden(
+                                fn(callable $get) =>
+                                $get('estado') == 'Finalizado' ||
+                                !in_array(auth()->user()->cargo, ['Doctor', 'Administrador'])
+                            )
+                            //->disabled()
+                            ->icon('heroicon-m-x-mark')
+                            ->color('danger')
+                            ->label('Cerrar Caso')
+                            ->requiresConfirmation() // Para que se muestre un modal de confirmación
+                            ->modalHeading('Cerrar Caso')
+                            ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
+                            ->form([
+                                Forms\Components\Textarea::make('justificacion_cierre')
+                                    ->label('Justificación de Cierre')
+                                    ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
+                                    ->required(),
+                                Forms\Components\Select::make('razon_cierre')
+                                    ->options([
+                                        'Resuelto' => 'Resuelto',
+                                        'No Resuelto' => 'No Resuelto',
+                                        'Cancelado' => 'Cancelado',
+                                        'Otro' => 'Otro',
+                                    ])
+                                    ->label('Razón de Cierre')
+                                    ->required(),
+                                Forms\Components\TextInput::make('usuario_cierre')
+                                    ->label('Usuario')
+                                    ->default(Auth::user()->name)
+                                    ->disabled(), // Este campo se muestra solo para información, no editable
+                            ])
+                            ->action(function (array $data, $record) {
+                                if (!$record) {
+                                    Notification::make()
+                                        ->title('Error')
+                                        ->body('No se encontró el caso / Caso aun no creado.')
+                                        ->danger()
+                                        ->send();
+                                    return;
+                                }
+
+                                // Actualizar el registro con los datos de cierre
+                                $record->update([
+                                    'estado' => 'Finalizado',
+                                    'justificacion_cierre' => $data['justificacion_cierre'],
+                                    'razon_cierre' => $data['razon_cierre'],
+                                    'usuario_cierre' => Auth::user()->name, // Usuario autenticado
+                                ]);
+                                Notification::make()->title('Caso cerrado correctamente')->success()->send();
+                            }),
+                    ])
                     ->schema(components: [
                         Forms\Components\Fieldset::make('Información de Solicitud de Traslado')
                             ->columns(4)
@@ -64,57 +121,32 @@ class TrasladoSecundario24Resource extends Resource
                                     ->readOnly()
                                     ->columnspan(2)
                                     ->maxLength(255),
-                                Forms\Components\Actions::make([
-                                    Action::make('cerrarCaso')
-                                        ->icon('heroicon-m-x-mark')
-                                        ->color('danger')
-                                        ->label('Cerrar Caso')
-                                        ->requiresConfirmation() // Para que se muestre un modal de confirmación
-                                        ->modalHeading('Cerrar Caso')
-                                        ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
-                                        ->form([
-                                            Forms\Components\Textarea::make('justificacion_cierre')
-                                                ->label('Justificación de Cierre')
-                                                ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
-                                                ->required(),
-                                            Forms\Components\Select::make('razon_cierre')
-                                                ->options([
-                                                    'Resuelto' => 'Resuelto',
-                                                    'No Resuelto' => 'No Resuelto',
-                                                    'Cancelado' => 'Cancelado',
-                                                    'Otro' => 'Otro',
-                                                ])
-                                                ->label('Razón de Cierre')
-                                                ->required(),
-                                            Forms\Components\TextInput::make('usuario_cierre')
-                                                ->label('Usuario')
-                                                ->default(Auth::user()->name)
-                                                ->disabled(), // Este campo se muestra solo para información, no editable
-                                        ])
-                                        ->action(function (array $data, $record) {
-                                            if (!$record) {
-                                                Notification::make()
-                                                    ->title('Error')
-                                                    ->body('No se encontró el caso.')
-                                                    ->danger()
-                                                    ->send();
-                                                return;
-                                            }
-
-                                            // Actualizar el registro con los datos de cierre
-                                            $record->update([
-                                                'estado' => 'Finalizado',
-                                                'justificacion_cierre' => $data['justificacion_cierre'],
-                                                'razon_cierre' => $data['razon_cierre'],
-                                                'usuario_cierre' => Auth::user()->name, // Usuario autenticado
-                                            ]);
-                                            Notification::make()->title('Caso cerrado correctamente')->success()->send();
-                                        }),
-                                ]),
                             ]),
+                        Forms\Components\Fieldset::make('Cierre de Caso')
+                            ->hidden(
+                                fn(callable $get) =>
+                                $get('estado') != 'Finalizado'
+                            )->columns(3)
+                            ->schema([
+                                Forms\Components\Textarea::make('justificacion_cierre')
+                                    ->label('Justificación de Cierre')
+                                    ->readOnly()
+                                    ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
+                                    ->required(),
+                                Forms\Components\TextInput::make('razon_cierre')
+                                    ->readOnly()
+                                    ->prefixicon('heroicon-o-exclamation-circle')
+                                    ->label('Razón de Cierre')
+                                    ->required(),
+                                Forms\Components\TextInput::make('usuario_cierre')
+                                    ->label('Doctor de cierre')
+                                    ->prefixicon('healthicons-o-doctor')
+                                    ->default(Auth::user()->name)
+                                    ->readOnly(), // Este campo se muestra solo para información, no editable
+                            ])
                     ]),
-
                 Forms\Components\Section::make('Traslado Secundario')
+                    ->icon('healthicons-o-ambulance')
                     ->schema([
                         Forms\Components\Fieldset::make('Información de Solicitud de Traslado')
                             ->columns(6)
@@ -122,6 +154,7 @@ class TrasladoSecundario24Resource extends Resource
                                 Forms\Components\ToggleButtons::make('asunto_traslado')
                                     ->label('Tipo de Traslado ')
                                     ->reactive()
+                                    ->default('Traslado de Paciente')
                                     ->required()
                                     ->options([
                                         'Traslado de Paciente' => 'Traslado de Paciente',
@@ -258,7 +291,6 @@ class TrasladoSecundario24Resource extends Resource
                                 Forms\Components\Select::make('origen_traslado')
                                     ->prefixicon('healthicons-o-hospital')
                                     ->searchable()->columnspan(2)
-
                                     ->hidden(fn(callable $get) => in_array($get('origen_institucion'), ['Domicilio', 'Otro']))
                                     ->options(function (callable $get) {
                                         $destino = $get('origen_institucion');
@@ -277,8 +309,16 @@ class TrasladoSecundario24Resource extends Resource
                                         }
                                     })
                                     ->reactive(),
+                                Forms\Components\TextInput::make('origen_traslado')
+                                    ->label('Otro Destino / Domicilio')->columnspan(2)
+                                    ->placeholder('Nombre de la Institución / Dirección')
+                                    ->hidden(fn(callable $get) => !in_array($get('origen_institucion'), ['Domicilio', 'Otro']))
+                                    ->prefixicon('healthicons-o-hospital')
+                                    ->reactive(),
+
+
                                 Forms\Components\Fieldset::make('Lugar del Hospital de Origen de Traslado')
-                                    ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
+                                    // ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
                                     ->schema([
                                         Forms\Components\Select::make('servicio_origen')
                                             ->prefixicon('healthicons-o-health-worker-form')
@@ -305,7 +345,6 @@ class TrasladoSecundario24Resource extends Resource
                                     ]),
                                 Forms\Components\TextInput::make('origen_institucion')
                                     ->label('Otro Destino / Domicilio')->columnspan(2)
-
                                     ->placeholder('Nombre de la Institución / Dirección')
                                     ->hidden(fn(callable $get) => !in_array($get('origen_traslado'), ['Domicilio', 'Otro']))
                                     ->prefixicon('healthicons-o-hospital')
@@ -333,7 +372,6 @@ class TrasladoSecundario24Resource extends Resource
                                 Forms\Components\Select::make('destino_traslado')
                                     ->prefixicon('healthicons-o-hospital')
                                     ->searchable()->columnspan(2)
-
                                     ->hidden(fn(callable $get) => in_array($get('destino_institucion'), ['Domicilio', 'Otro']))
                                     ->options(function (callable $get) {
                                         $destino = $get('destino_institucion');
@@ -351,17 +389,14 @@ class TrasladoSecundario24Resource extends Resource
                                                 return [];
                                         }
                                     })
-
                                     ->reactive(),
                                 Forms\Components\TextInput::make('destino_traslado')
                                     ->label('Otro Destino / Domicilio')->columnspan(2)
-
                                     ->placeholder('Nombre de la Institución / Dirección')
                                     ->hidden(fn(callable $get) => !in_array($get('destino_institucion'), ['Domicilio', 'Otro']))
                                     ->prefixicon('healthicons-o-hospital')
                                     ->reactive(),
                                 Forms\Components\Fieldset::make('Lugar del Hospital hacia a donde será traladado')
-                                    ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
                                     ->schema([
                                         Forms\Components\Select::make('servicio_destino')
                                             ->prefixicon('healthicons-o-health-worker-form')
@@ -381,6 +416,7 @@ class TrasladoSecundario24Resource extends Resource
                                             ]),
                                         Forms\Components\TextInput::make('numero_cama_destino')
                                             ->numeric()
+                                            ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
                                             ->prefixicon('healthicons-o-hospitalized')
                                             ->placeholder('Número de Cama')
                                             ->label('Número de Cama')
@@ -420,6 +456,14 @@ class TrasladoSecundario24Resource extends Resource
                                     ->label('¿Programado?')
                                     ->default('NO')
                                     ->reactive()
+                                    ->colors([
+                                        'SI' => 'success',
+                                        'NO' => 'danger',
+                                    ])
+                                    ->icons([
+                                        'SI' => 'heroicon-o-check',
+                                        'NO' => 'heroicon-o-x-circle',
+                                    ])
                                     ->options([
                                         'SI' => 'SI',
                                         'NO' => 'NO',
@@ -475,6 +519,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->options([
                                         'Horas' => 'Horas',
                                         'Días' => 'Días',
+                                        'Semanas' => 'Semanas',
                                         'Meses' => 'Meses',
                                         'Años' => 'Años',
                                     ])
@@ -491,6 +536,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->columnspan(4)
                                     ->maxLength(255),
                                 Forms\Components\Textarea::make('diagnostico_paciente')
+                                    ->required()
                                     ->placeholder('Diagnóstico del Paciente')
                                     ->maxLength(255)
                                     ->columnspan(4),
@@ -571,8 +617,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->numeric(),
                                 Forms\Components\DatePicker::make('fecha_probable_parto')
                                     ->label('Fecha Probable de Parto')
-                                    ->prefixicon('heroicon-o-calendar')
-                                    ->required(),
+                                    ->prefixicon('heroicon-o-calendar'),
                             ]),
                         Forms\Components\Fieldset::make('Datos de Evaluación Obstétrica')
                             ->columns(5)
@@ -711,6 +756,14 @@ class TrasladoSecundario24Resource extends Resource
                                         'NO' => 'NO',
                                         'SI' => 'SI',
                                     ])
+                                    ->colors([
+                                        'NO' => 'danger',
+                                        'SI' => 'success',
+                                    ])
+                                    ->icons([
+                                        'NO' => 'healthicons-o-ventilator',
+                                        'SI' => 'healthicons-o-ventilator',
+                                    ])
                                     ->inline(),
                                 Forms\Components\Select::make('modo_ventilacion')
                                     ->prefixicon('healthicons-o-ventilator')
@@ -771,7 +824,7 @@ class TrasladoSecundario24Resource extends Resource
                         Forms\Components\Fieldset::make('Notas de Seguimiento')
                             ->schema([
                                 Forms\Components\TextArea::make('notas_seguimiento')
-                                    ->label('')
+                                    ->label('Notas')
                                     ->placeholder('Notas de Seguimiento')
                                     ->columnSpanFull(),
                             ]),
@@ -786,8 +839,8 @@ class TrasladoSecundario24Resource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('tipo_paciente')
-                    ->label('¿Estado?')
-                    ->default('----')
+                    ->label('Estado P.')
+                    ->default('---')
                     ->sortable()
                     ->badge()
                     ->color(function ($record) {
@@ -811,7 +864,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('correlativo')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->badge()->alignment(Alignment::Center)
 
@@ -820,7 +873,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('diagnostico_paciente')
                     ->icon('healthicons-o-clinical-f')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->alignment(Alignment::Center)
                     ->label('Diagnóstico')
@@ -828,34 +881,34 @@ class TrasladoSecundario24Resource extends Resource
                     ->searchable(),
                 Tables\Columns\ColorColumn::make('color')
                     ->label('Prioridad')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('origen_traslado')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
                     ->label('Origen')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('destino_traslado')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
                     ->label('Destino')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nombres_paciente')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
                     ->label('Nombres')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('apellidos_paciente')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
                     ->label('Apellidos')
@@ -864,14 +917,14 @@ class TrasladoSecundario24Resource extends Resource
                 Tables\Columns\TextColumn::make('edad_paciente')
                     ->numeric()
                     ->label('Edad')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ambulancia')
-                    ->default('----')
+                    ->default('---')
                     ->icon('healthicons-o-ambulance')
                     ->color('primary')
                     ->sortable()->alignment(Alignment::Center)
@@ -879,9 +932,27 @@ class TrasladoSecundario24Resource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('programado')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()->alignment(Alignment::Center)
-
+                    ->badge()
+                    ->color(function ($record) {
+                        $programado = $record->programado;
+                        if ($programado === "SI") {
+                            return 'success';
+                        }
+                        if ($programado === "NO") {
+                            return 'danger';
+                        }
+                    })
+                    ->icon(function ($record) {
+                        $programado = $record->programado;
+                        if ($programado === "SI") {
+                            return 'heroicon-o-check-circle';
+                        }
+                        if ($programado === "NO") {
+                            return 'heroicon-o-x-circle';
+                        }
+                    })
                     ->label('¿Programado?')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
@@ -893,63 +964,94 @@ class TrasladoSecundario24Resource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('estado')
                     ->default('----')
+                    ->badge()
+                    ->color(function ($record) {
+                        $estado = $record->estado;
+                        if ($estado === "Pendiente") {
+                            return 'warning';
+                        }
+                        if ($estado === "En Curso") {
+                            return 'info';
+                        }
+                        if ($estado === "Finalizado") {
+                            return 'success';
+                        }
+                        if ($estado === "Cancelado") {
+                            return 'danger';
+                        }
+                    })
+                    ->icon(function ($record) {
+                        $estado = $record->estado;
+                        if ($estado === "Pendiente") {
+                            return 'heroicon-o-clock';
+                        }
+                        if ($estado === "En Curso") {
+                            return 'heroicon-o-play';
+                        }
+                        if ($estado === "Finalizado") {
+                            return 'heroicon-o-check';
+                        }
+                        if ($estado === "Cancelado") {
+                            return 'heroicon-o-x';
+                        }
+                    })
                     ->sortable()->alignment(Alignment::Center)
                     ->label('Estado')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 /////////////////////////////////////////////////////////////////////////////////////////////////
                 Tables\Columns\TextColumn::make('numero_llamada')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('fecha')
                     ->date()
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
-                    ->default('----')
+                    ->default('---')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('hora')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('tipo_ambulancia')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('operador_nombre')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('operador_numero')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tipo_traslado')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('nombre_medico_solicitante')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('telefono_medico_solicitante')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('origen_institucion')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
@@ -957,37 +1059,37 @@ class TrasladoSecundario24Resource extends Resource
 
 
                 Tables\Columns\TextColumn::make('nombre_medico_recibe')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('telefono_medico_recibe')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
 
                 Tables\Columns\TextColumn::make('sexo_paciente')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('registro_expediente')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tipo_critico')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('edad_gestacional')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
@@ -995,64 +1097,68 @@ class TrasladoSecundario24Resource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('fecha_probable_parto')
                     ->date()
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('dilatacion')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('borramiento')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('hora_obstetrica')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-
+                Tables\Columns\TextColumn::make('FCF')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('membranas_integras')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('mov_fetales')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('trabajo_parto')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('contracciones')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('frecuencia')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bombas_infusion')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('servicio')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('numero_cama')
-                    ->default('----')
+                    ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
@@ -1065,15 +1171,14 @@ class TrasladoSecundario24Resource extends Resource
             ->filters([
                 //
             ])
-            ->defaultGroup('estado')
             ->paginated([10, 25, 50, 100])
             ->actions([
-                ActionGroup::make([
-                    // ActivityLogTimelineTableAction::make('Historico'),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ViewAction::make(),
-                ]),
-            ])
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SixExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SixExtraLarge)->iconButton()->color('primary')
+                    ->hidden(fn($record) => $record->estado === 'Finalizado'),
+                //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
+            ], position: ActionsPosition::BeforeCells)
+            ->defaultGroup('estado')
 
             ->bulkActions([
 
@@ -1097,8 +1202,8 @@ class TrasladoSecundario24Resource extends Resource
     {
         return [
             'index' => Pages\ListTrasladoSecundario24s::route('/'),
-            'create' => Pages\CreateTrasladoSecundario24::route('/create'),
-            'edit' => Pages\EditTrasladoSecundario24::route('/{record}/edit'),
+            //'create' => Pages\CreateTrasladoSecundario24::route('/create'),
+            //'edit' => Pages\EditTrasladoSecundario24::route('/{record}/edit'),
         ];
     }
 }

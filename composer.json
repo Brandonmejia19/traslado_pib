@@ -10,6 +10,7 @@
         "awcodes/filament-sticky-header": "^2.0",
         "blade-ui-kit/blade-icons": "^1.7",
         "brunocfalcao/blade-feather-icons": "^4.0",
+        "cmsmaxinc/filament-error-pages": "^1.0",
         "diogogpinto/filament-auth-ui-enhancer": "^1.0",
         "directorytree/ldaprecord": "^3.7",
         "directorytree/ldaprecord-laravel": "^3.3",
@@ -43,6 +44,7 @@
         "troccoli/blade-health-icons": "^4.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.15",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

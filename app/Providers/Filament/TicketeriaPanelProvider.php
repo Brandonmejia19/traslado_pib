@@ -25,6 +25,7 @@ use App\Filament\Resources\HerramientasambResource;
 use App\Filament\Resources\AmbulanciaResource;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\TrasladoSecundarioResource;
+use App\Filament\Resources\TrasladoSecundarioGestoresResource;
 use App\Filament\Resources\TrasladoSecundario24Resource;
 use App\Filament\Resources\TrasladoSecundarioPropiosResource;
 use App\Filament\Resources\ListaChequeoResource;
@@ -37,7 +38,7 @@ use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugi
 use Vormkracht10\TwoFactorAuth\Http\Livewire\Auth\Login;
 use Rmsramos\Activitylog\ActivitylogPlugin;
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
-
+use Cmsmaxinc\FilamentErrorPages\FilamentErrorPagesPlugin;
 class TicketeriaPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -45,7 +46,7 @@ class TicketeriaPanelProvider extends PanelProvider
         return $panel
             ->id('ticketeria')
             ->path('ticketeria')
-            ->darkMode(false)
+          //  ->darkMode(false)
             ->sidebarWidth('15rem')
             ->default()
             ->sidebarCollapsibleOnDesktop()
@@ -68,6 +69,7 @@ class TicketeriaPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo222.svg'))
             ->favicon(asset('images/logocheques.svg'))
             ->plugins([
+                FilamentErrorPagesPlugin::make(),
                 FilamentBackgroundsPlugin::make()->imageProvider(
                     MyImages::make()
                         ->directory('images/backgrounds')
@@ -95,7 +97,8 @@ class TicketeriaPanelProvider extends PanelProvider
                 TrasladoSecundarioResource::class,
                 TrasladoSecundario24Resource::class,
                 TrasladoSecundarioPropiosResource::class,
-            ])
+                TrasladoSecundarioGestoresResource::class,
+                 ])
             ->discoverWidgets(in: app_path('Filament/Ticketeria/Widgets'), for: 'App\\Filament\\Ticketeria\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
