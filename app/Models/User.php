@@ -23,6 +23,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
 {
     use HasApiTokens, LogsActivity, AuthenticationLoggable, HasFactory, Notifiable, TwoFactorAuthenticatable, AuthenticatesWithLdap, HasRoles, HasSuperAdmin;
+   
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

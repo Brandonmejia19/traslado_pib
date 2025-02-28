@@ -28,6 +28,7 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Support\RawJs;
+use Illuminate\Support\Facades\Request;
 
 class TrasladoSecundarioPropiosResource extends Resource
 {
@@ -111,6 +112,20 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->placeholder('Número del Operador')
                                     ->columnspan(1)
                                     ->numeric()
+                                    ->default(function () {
+                                        $ip = Request::ip(); // Capturar la IP actual
+
+                                        // Si la aplicación está detrás de un proxy/CDN (Ej: Cloudflare, Nginx)
+                                        if (config('app.behind_cdn')) {
+                                            $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+                                        }
+
+                                        // Dividir la IP en segmentos y obtener los últimos 2
+                                        $segments = explode('.', $ip);
+                                        $lastDigits = array_slice($segments, -1); // Últimos 2 segmentos
+
+                                        return implode('.', $lastDigits); // Convertirlos de vuelta en string
+                                    })
                                     ->readOnly()
                                     ->prefixicon('healthicons-o-call-centre')
                                     ->maxLength(length: 255),
@@ -537,8 +552,9 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->placeholder('Registro de Expediente')
                                     ->columnspan(4)
                                     ->maxLength(255),
-                                Forms\Components\Textarea::make('diagnostico_paciente')
+                                Forms\Components\TextInput::make('diagnostico_paciente')
                                     ->required()
+                                    ->prefixicon('healthicons-o-clinical-f')
                                     ->placeholder('Diagnóstico del Paciente')
                                     ->maxLength(255)
                                     ->columnspan(4),
@@ -1176,16 +1192,16 @@ class TrasladoSecundarioPropiosResource extends Resource
             ])
             ->paginated([10, 25, 50, 100])
             ->actions([
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SixExtraLarge)
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)
                     ->iconButton()
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->icon('heroicon-o-eye')->color('warning')
                     ->modalAlignment(Alignment::Center)
                     ->modalHeading('Traslados Secundarios - Vista Rápida'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
-                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SixExtraLarge)
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)
                     ->modalWidth(
-                        MaxWidth::SixExtraLarge
+                        MaxWidth::SevenExtraLarge
                     )
                     ->iconButton()
                     ->hidden(fn($record) => $record->estado === 'Finalizado')
@@ -1219,7 +1235,7 @@ class TrasladoSecundarioPropiosResource extends Resource
         return [
             'index' => Pages\ListTrasladoSecundarioPropios::route('/'),
             //  'create' => Pages\CreateTrasladoSecundarioPropios::route('/create'),
-            'edit' => Pages\EditTrasladoSecundarioPropios::route('/{record}/edit'),
+            //'edit' => Pages\EditTrasladoSecundarioPropios::route('/{record}/edit'),
         ];
     }
 }

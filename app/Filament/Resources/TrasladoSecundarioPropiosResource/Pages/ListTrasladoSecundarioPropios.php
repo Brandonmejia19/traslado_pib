@@ -29,10 +29,11 @@ class ListTrasladoSecundarioPropios extends ListRecords
                     'Crear Traslado Secundario'
                 )->color('primary')
                 ->modalWidth(
-                    MaxWidth::SixExtraLarge
+                    MaxWidth::SevenExtraLarge
                 )->icon(
                     'healthicons-o-mobile-clinic'
                 )->modalIcon('healthicons-o-mobile-clinic')
+                ->createAnother(false)
                 ->modalAlignment(Alignment::Center)
                 ->modalHeading('Traslados Secundarios')
         ];

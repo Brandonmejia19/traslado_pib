@@ -1184,6 +1184,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                     ->label('Estado Paciente'),
 
             ])
+            ->emptyStateHeading('Parece que no hay registros sin asignar')
             ->paginated([10, 25, 50, 100])
             ->actions([
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SixExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),

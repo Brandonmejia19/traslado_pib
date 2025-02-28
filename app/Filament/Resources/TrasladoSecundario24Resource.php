@@ -1178,7 +1178,12 @@ class TrasladoSecundario24Resource extends Resource
             ])
             ->paginated([10, 25, 50, 100])
             ->actions([
-
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)
+                ->iconButton()
+                ->modalIcon('healthicons-o-mobile-clinic')
+                ->icon('heroicon-o-eye')->color('warning')
+                ->modalAlignment(Alignment::Center)
+                ->modalHeading('Traslados Secundarios - Vista Rápida'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SixExtraLarge)
                     ->modalWidth(
