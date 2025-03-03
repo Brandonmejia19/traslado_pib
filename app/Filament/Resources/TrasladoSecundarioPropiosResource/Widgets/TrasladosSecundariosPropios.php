@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\TrasladoSecundarioPropiosResource\Widgets;
 
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget as BaseWidget;
+use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget\Stat;
 use Carbon\Carbon;
 use App\Models\TrasladoSecundario;
 
@@ -41,19 +41,27 @@ class TrasladosSecundariosPropios extends BaseWidget
 
         return [
             Stat::make('Total de Traslados en el dia', $totaldia)
+                ->icon('healthicons-o-clinical-fe')
+                ->progressBarColor('success')
+                ->progress($totaldia)
+                ->iconColor('success')
                 //>description('Traslados críticos pendientes de asignación de recurso')
-                ->chartColor('success')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
+                ->iconBackgroundColor('success')
                 ->descriptionIcon('healthicons-o-rural-post'),
             Stat::make('Traslados Activos del día', $totalactivos)
                 //->description('Traslados Programados/Pendientes de asignacion de recurso')
-                ->chartColor('primary')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->descriptionIcon('healthicons-o-rural-post'),
+                ->progressBarColor('primary')
+                ->iconColor('primary')
+                ->iconBackgroundColor('primary')
+                ->progress($totalactivos)
+                ->icon('healthicons-o-emergency-post'),
             Stat::make('Pendientes de Asignacion de Recursos', $totalpendientes)
                 //  ->description('Traslados En curso')
-                ->chartColor('warning')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
+                ->progressBarColor('warning')
+                ->iconColor('warning')
+                ->iconBackgroundColor('warning')
+                ->icon('healthicons-o-ambulance')
+                ->progress($totalpendientes)
 
         ];
     }

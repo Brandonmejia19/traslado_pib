@@ -247,6 +247,8 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
         ),
         'E' => 
         array (
+            'EightyNine\\FilamentAdvancedWidget\\Database\\Factories\\' => 53,
+            'EightyNine\\FilamentAdvancedWidget\\' => 34,
             'Egulias\\EmailValidator\\' => 23,
         ),
         'D' => 
@@ -868,6 +870,14 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
         array (
             0 => __DIR__ . '/..' . '/fakerphp/faker/src/Faker',
         ),
+        'EightyNine\\FilamentAdvancedWidget\\Database\\Factories\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/database/factories',
+        ),
+        'EightyNine\\FilamentAdvancedWidget\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src',
+        ),
         'Egulias\\EmailValidator\\' => 
         array (
             0 => __DIR__ . '/..' . '/egulias/email-validator/src',
@@ -1128,6 +1138,7 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
         'App\\Models\\TrasladoSecundarioPropios' => __DIR__ . '/../..' . '/app/Models/TrasladoSecundarioPropios.php',
         'App\\Models\\UnidadListado' => __DIR__ . '/../..' . '/app/Models/UnidadListado.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
+        'App\\Policies\\ActivityPolicy' => __DIR__ . '/../..' . '/app/Policies/ActivityPolicy.php',
         'App\\Policies\\AmbulanciasPolicy' => __DIR__ . '/../..' . '/app/Policies/AmbulanciasPolicy.php',
         'App\\Policies\\HospitalListadoPolicy' => __DIR__ . '/../..' . '/app/Policies/HospitalListadoPolicy.php',
         'App\\Policies\\ISSListadoPolicy' => __DIR__ . '/../..' . '/app/Policies/ISSListadoPolicy.php',
@@ -2068,6 +2079,34 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
         'Egulias\\EmailValidator\\Warning\\QuotedString' => __DIR__ . '/..' . '/egulias/email-validator/src/Warning/QuotedString.php',
         'Egulias\\EmailValidator\\Warning\\TLD' => __DIR__ . '/..' . '/egulias/email-validator/src/Warning/TLD.php',
         'Egulias\\EmailValidator\\Warning\\Warning' => __DIR__ . '/..' . '/egulias/email-validator/src/Warning/Warning.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedBarChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedBarChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedBubbleChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedBubbleChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedDoughnutChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedDoughnutChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedLineChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedLineChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedPieChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedPieChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedPolarAreaChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedPolarAreaChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedRadarChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedRadarChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedScatterChartWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedScatterChartWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedStatsOverviewWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedStatsOverviewWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedStatsOverviewWidget\\Card' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedStatsOverviewWidget/Card.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedStatsOverviewWidget\\Concerns\\CanCustomiseIconPosition' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedStatsOverviewWidget/Concerns/CanCustomiseIconPosition.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedStatsOverviewWidget\\Concerns\\HasColorCustomisation' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedStatsOverviewWidget/Concerns/HasColorCustomisation.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedStatsOverviewWidget\\Concerns\\HasProgressBar' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedStatsOverviewWidget/Concerns/HasProgressBar.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedStatsOverviewWidget\\Stat' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedStatsOverviewWidget/Stat.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedTableWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedTableWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\AdvancedWidgetConfiguration' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/AdvancedWidgetConfiguration.php',
+        'EightyNine\\FilamentAdvancedWidget\\Commands\\Aliases\\MakeAdvancedWidgetCommand' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Commands/Aliases/MakeAdvancedWidgetCommand.php',
+        'EightyNine\\FilamentAdvancedWidget\\Commands\\MakeAdvancedWidgetCommand' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Commands/MakeAdvancedWidgetCommand.php',
+        'EightyNine\\FilamentAdvancedWidget\\Concerns\\CanBeCustomised' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Concerns/CanBeCustomised.php',
+        'EightyNine\\FilamentAdvancedWidget\\Concerns\\CanPoll' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Concerns/CanPoll.php',
+        'EightyNine\\FilamentAdvancedWidget\\Concerns\\HasSectionContent' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Concerns/HasSectionContent.php',
+        'EightyNine\\FilamentAdvancedWidget\\Facades\\FilamentAdvancedWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Facades/FilamentAdvancedWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\FilamentAdvancedWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/FilamentAdvancedWidget.php',
+        'EightyNine\\FilamentAdvancedWidget\\FilamentAdvancedWidgetPlugin' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/FilamentAdvancedWidgetPlugin.php',
+        'EightyNine\\FilamentAdvancedWidget\\FilamentAdvancedWidgetServiceProvider' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/FilamentAdvancedWidgetServiceProvider.php',
+        'EightyNine\\FilamentAdvancedWidget\\Testing\\TestsFilamentAdvancedWidget' => __DIR__ . '/..' . '/eightynine/filament-advanced-widgets/src/Testing/TestsFilamentAdvancedWidget.php',
         'Faker\\Calculator\\Ean' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Calculator/Ean.php',
         'Faker\\Calculator\\Iban' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Calculator/Iban.php',
         'Faker\\Calculator\\Inn' => __DIR__ . '/..' . '/fakerphp/faker/src/Faker/Calculator/Inn.php',

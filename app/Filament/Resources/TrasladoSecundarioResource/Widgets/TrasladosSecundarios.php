@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\TrasladoSecundarioResource\Widgets;
 
 use App\Models\TrasladoSecundario;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget as BaseWidget;
+use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget\Stat;
 use Carbon\Carbon;
 
 class TrasladosSecundarios extends BaseWidget
@@ -39,25 +39,33 @@ class TrasladosSecundarios extends BaseWidget
 
         return [
             Stat::make('Traslado de Pacientes Criticos - Finalizados', $totalcriticos)
-              //  ->description('Traslados críticos pendientes de asignación de recurso')
-                ->chartColor('danger')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->descriptionIcon('healthicons-o-rural-post'),
+                ->iconColor('danger')
+                ->progressBarColor('danger')
+                ->iconBackgroundColor('danger')
+                ->progress($totalcriticos)
+                //  ->description('Traslados críticos pendientes de asignación de recurso')
+                ->icon('healthicons-o-rural-post'),
             Stat::make('Traslado de Pacientes Estables - Finalizados', $totalestables)
-              //  ->description('Traslados Programados/Pendientes de asignacion de recurso')
-                ->chartColor('danger')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->descriptionIcon('healthicons-o-rural-post'),
+                //  ->description('Traslados Programados/Pendientes de asignacion de recurso')
+                ->iconColor('warning')
+                ->progressBarColor('warning')
+                ->iconBackgroundColor('warning')
+                ->icon('healthicons-o-rural-post')
+                ->progress($totalestables),
             Stat::make('Total de Transporte de pacientes - Finalizados', $totaltransporte)
-             //   ->description('Traslados En curso')
-                ->chartColor('primary')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->descriptionIcon('healthicons-o-ambulance'),
+                //   ->description('Traslados En curso')
+                ->iconColor('primary')
+                ->iconBackgroundColor('primary')
+                ->progressBarColor('primary')
+                ->progress($totaltransporte)
+                ->icon('healthicons-o-ambulance'),
             Stat::make('Total de Traslados Finalizados', $total)
-             //   ->description('Cantidad de Traslados Registrados el día: ' . Carbon::now()->format('d/m/Y'))
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->chartColor('success')
-                ->descriptionIcon('healthicons-o-hospitalized'),
+                ->iconBackgroundColor('success')
+                ->iconColor('success')
+                ->progressBarColor('success')
+                ->progress($total)
+                //   ->description('Cantidad de Traslados Registrados el día: ' . Carbon::now()->format('d/m/Y'))
+                ->icon('healthicons-o-hospitalized'),
         ];
     }
 }

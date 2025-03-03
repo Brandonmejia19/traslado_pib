@@ -146,6 +146,8 @@ return array(
     'Filament\\Actions\\' => array($vendorDir . '/filament/actions/src'),
     'Filament\\' => array($vendorDir . '/filament/filament/src', $vendorDir . '/filament/spatie-laravel-media-library-plugin/src', $vendorDir . '/filament/spatie-laravel-settings-plugin/src', $vendorDir . '/filament/spatie-laravel-translatable-plugin/src'),
     'Faker\\' => array($vendorDir . '/fakerphp/faker/src/Faker'),
+    'EightyNine\\FilamentAdvancedWidget\\Database\\Factories\\' => array($vendorDir . '/eightynine/filament-advanced-widgets/database/factories'),
+    'EightyNine\\FilamentAdvancedWidget\\' => array($vendorDir . '/eightynine/filament-advanced-widgets/src'),
     'Egulias\\EmailValidator\\' => array($vendorDir . '/egulias/email-validator/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
     'Doctrine\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib/Doctrine/Inflector'),

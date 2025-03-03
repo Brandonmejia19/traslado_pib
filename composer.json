@@ -16,6 +16,7 @@
         "directorytree/ldaprecord": "^3.7",
         "directorytree/ldaprecord-laravel": "^3.3",
         "discoverydesign/filament-gaze": "^1.1",
+        "eightynine/filament-advanced-widgets": "^3.0",
         "filament/filament": "^3.2",
         "filament/notifications": "3.2",
         "filament/spatie-laravel-media-library-plugin": "3.2",
