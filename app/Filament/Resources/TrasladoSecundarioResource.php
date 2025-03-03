@@ -9,7 +9,7 @@ use App\Models\Ambulancias;
 use App\Models\UnidadListado;
 use App\Models\ISSListado;
 use App\Models\PrivadoListado;
-use App\Models\TrasladoSecundario;
+use App\Models\TrasladoSecundarioHistorico;
 use App\Models\TipoTraslado;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -37,7 +37,7 @@ Modal::closedByClickingAway(false);
 
 class TrasladoSecundarioResource extends Resource
 {
-    protected static ?string $model = TrasladoSecundario::class;
+    protected static ?string $model = TrasladoSecundarioHistorico::class;
 
     protected static ?string $navigationIcon = 'healthicons-o-cardiogram';
     protected static ?string $navigationGroup = 'Casos';
@@ -924,7 +924,7 @@ class TrasladoSecundarioResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('edad_paciente')
                     ->numeric()
-                    ->description(fn (TrasladoSecundario $record): string => $record->componente_edad)
+                    ->description(fn (TrasladoSecundarioHistorico $record): string => $record->componente_edad)
 
                     ->label('Edad')
                     ->default('---')

@@ -20,6 +20,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Request;
 
 /**
  * @property Form $form
@@ -69,40 +70,58 @@ class Login extends SimplePage
         }
 
         $data = $this->form->getState();
+///LOGICA DE AUTENTICACIÓN
+try {
+    $user = \App\Models\User::where('user', $data['user'])->first();
 
-        try {
-            $user = \App\Models\User::where('user', $data['user'])->first();
+    if (!$user) {
+        $this->throwFailureValidationException();
+    }
 
-            if (!$user) {
-                $this->throwFailureValidationException();
-            }
+    $connection = new \LdapRecord\Connection([
+        'hosts'    => ['10.10.43.6'],
+        'username' => $data['user'] . '@sem132.local',
+        'password' => $data['password'],
+    ]);
 
-            $connection = new \LdapRecord\Connection([
-                'hosts'    => ['10.10.43.6'],
-                'username' => $data['user'] . '@sem132.local',
-                'password' => $data['password'],
-            ]);
+    if (!$connection->auth()->attempt($data['user'] . '@sem132.local', $data['password'])) {
+        $this->throwFailureValidationException();
+    }
 
-            if (!$connection->auth()->attempt($data['user'] . '@sem132.local', $data['password'])) {
-                $this->throwFailureValidationException();
-            }
+    if (
+        ($user instanceof FilamentUser) &&
+        (!$user->canAccessPanel(Filament::getCurrentPanel()))
+    ) {
+        Filament::auth()->logout();
+        $this->throwFailureValidationException();
+    }
 
-            if (
-                ($user instanceof FilamentUser) &&
-                (!$user->canAccessPanel(Filament::getCurrentPanel()))
-            ) {
-                Filament::auth()->logout();
-                $this->throwFailureValidationException();
-            }
+    // Captura la IP
+    $ip = Request::ip();
+    if (config('app.behind_cdn')) {
+        $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+    }
 
-            Filament::auth()->login($user, $data['remember'] ?? false);
+    // Extraer el último segmento de la IP y determinar el cargo
+    $segments = explode('.', $ip);
+    $lastDigits = array_slice($segments, -1);
+    $total = implode('.', $lastDigits);
+    $cargo = ($total >= 10 && $total <= 40) ? 'Medico' : 'Operador';
 
-            session()->regenerate();
+    $user->puesto = $total;
+    $user->cargo = $cargo;
+    $user->save();
 
-            return app(LoginResponse::class);
-        } catch (\LdapRecord\Auth\BindException $e) {
-            $this->throwFailureValidationException();
-        }
+    Filament::auth()->login($user, $data['remember'] ?? false);
+
+    session()->regenerate();
+
+    return app(LoginResponse::class);
+} catch (\LdapRecord\Auth\BindException $e) {
+    $this->throwFailureValidationException();
+}
+
+
     }
 
     protected function throwFailureValidationException(): never

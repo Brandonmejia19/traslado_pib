@@ -22,6 +22,7 @@ use Illuminate\Validation\Rules\Unique;
 use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\CheckboxList;
 
 class RoleResource extends Resource
 {
@@ -34,7 +35,7 @@ class RoleResource extends Resource
 
     public static function getNavigationIcon(): ?string
     {
-        return  config('filament-spatie-roles-permissions.icons.role_navigation');
+        return config('filament-spatie-roles-permissions.icons.role_navigation');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -59,7 +60,7 @@ class RoleResource extends Resource
 
     public static function getNavigationSort(): ?int
     {
-        return  config('filament-spatie-roles-permissions.sort.role_navigation');
+        return config('filament-spatie-roles-permissions.sort.role_navigation');
     }
 
     public static function getPluralLabel(): string
@@ -99,22 +100,21 @@ class RoleResource extends Resource
                                     ->visible(fn() => config('filament-spatie-roles-permissions.should_show_guard', true))
                                     ->required(),
 
-                                Select::make('permissions')
+                                CheckboxList::make('permissions')
                                     ->columnSpanFull()
-                                    ->multiple()
                                     ->label(__('filament-spatie-roles-permissions::filament-spatie.field.permissions'))
                                     ->relationship(
                                         name: 'permissions',
                                         modifyQueryUsing: fn(Builder $query) => $query->orderBy('name'),
                                     )
+                                    ->searchable()
+                                    ->bulkToggleable()
+                                    ->columns(3)
                                     ->visible(config('filament-spatie-roles-permissions.should_show_permissions_for_roles'))
-                                    ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->name} ({$record->guard_name})")
-                                    ->searchable(['name', 'guard_name']) // searchable on both name and guard_name
-                                    ->preload(config('filament-spatie-roles-permissions.preload_permissions')),
-
+                                    ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->name} ({$record->guard_name})"),
                                 Select::make(config('permission.column_names.team_foreign_key', 'team_id'))
                                     ->label(__('filament-spatie-roles-permissions::filament-spatie.field.team'))
-                                    ->hidden(fn() => ! config('permission.teams', false) || Filament::hasTenancy())
+                                    ->hidden(fn() => !config('permission.teams', false) || Filament::hasTenancy())
                                     ->options(
                                         fn() => config('filament-spatie-roles-permissions.team_model', App\Models\Team::class)::pluck('name', 'id')
                                     )
@@ -157,9 +157,9 @@ class RoleResource extends Resource
             ])
             ->emptyStateActions(
                 config('filament-spatie-roles-permissions.should_remove_empty_state_actions.roles') ? [] :
-                    [
-                        Tables\Actions\CreateAction::make()
-                    ]
+                [
+                    Tables\Actions\CreateAction::make()
+                ]
             );
     }
 

@@ -39,6 +39,8 @@ use Vormkracht10\TwoFactorAuth\Http\Livewire\Auth\Login;
 use Rmsramos\Activitylog\ActivitylogPlugin;
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
 use Cmsmaxinc\FilamentErrorPages\FilamentErrorPagesPlugin;
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
+
 class TicketeriaPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -69,6 +71,7 @@ class TicketeriaPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo222.svg'))
             ->favicon(asset('images/logocheques.svg'))
             ->plugins([
+                EasyFooterPlugin::make(),
              //   FilamentErrorPagesPlugin::make(),
                 FilamentBackgroundsPlugin::make()->imageProvider(
                     MyImages::make()

@@ -39,7 +39,9 @@ class UserResource extends Resource
                             Forms\Components\TextInput::make('user')
                                 ->required()
                                 ->maxLength(255),
-                            Forms\Components\Select::make('roles')->multiple()->relationship('roles', 'name'),
+                            Forms\Components\Select::make('roles')
+                                ->relationship(name: 'roles', titleAttribute: 'name')
+                                ->searchable(),
                             Forms\Components\Select::make('cargo')
                                 ->options([
                                     'Administrador' => 'Administrador',
@@ -78,7 +80,7 @@ class UserResource extends Resource
                     ->placeholder('Vacío')
                     ->sortable()
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('cargo')
+                Tables\Columns\TextColumn::make('cargo')
                     ->placeholder('Vacío')
                     ->sortable()
                     ->searchable(),

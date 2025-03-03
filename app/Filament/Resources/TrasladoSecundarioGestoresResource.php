@@ -35,7 +35,7 @@ use Filament\Tables\Enums\ActionsPosition;
 
 class TrasladoSecundarioGestoresResource extends Resource
 {
-    protected static ?string $model = TrasladoSecundario::class;
+    protected static ?string $model = TrasladoSecundarioGestores::class;
     protected static ?string $navigationIcon = 'healthicons-o-ambulance';
     protected static ?string $navigationGroup = 'Casos';
     protected static ?string $label = 'Traslados sin recuso asignado';

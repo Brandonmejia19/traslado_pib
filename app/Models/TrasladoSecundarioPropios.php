@@ -9,7 +9,7 @@ use App\Models\TipoTraslado;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class TrasladoSecundario extends Model
+class TrasladoSecundarioPropios extends Model
 {
     use LogsActivity;
 

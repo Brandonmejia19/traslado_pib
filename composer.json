@@ -36,7 +36,7 @@
         "rmsramos/activitylog": "^1.0",
         "solution-forest/filament-email-2fa": "^1.1",
         "spatie/laravel-activitylog": "^4.9",
-        "spatie/laravel-permission": "^6.10",
+        "spatie/laravel-permission": "^6.9",
         "swisnl/filament-backgrounds": "^1.1",
         "symfony/http-foundation": "*",
         "tapp/filament-auditing": "3.0",

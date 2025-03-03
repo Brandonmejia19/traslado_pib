@@ -23,7 +23,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
 {
     use HasApiTokens, LogsActivity, AuthenticationLoggable, HasFactory, Notifiable, TwoFactorAuthenticatable, AuthenticatesWithLdap, HasRoles, HasSuperAdmin;
-   
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -59,7 +59,12 @@ class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
 
-
+        if ($panel->getId() === 'admin') {
+            return str_ends_with($this->cargo, 'Médico')|| str_ends_with($this->cargo, 'Administrador');
+        }
+        if ($panel->getId() === 'ticketeria') {
+            return str_ends_with($this->cargo, 'Operador') || str_ends_with($this->cargo, 'Médico') || str_ends_with($this->cargo, 'Gestor') || str_ends_with($this->cargo, 'Administrador');
+        }
         return true;
 
     }

@@ -9,6 +9,7 @@ use App\Models\Ambulancias;
 use App\Models\UnidadListado;
 use App\Models\ISSListado;
 use App\Models\PrivadoListado;
+use App\Models\TrasladoSecundarioPropios;
 use App\Models\TrasladoSecundario;
 use App\Models\TipoTraslado;
 use Filament\Forms;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\Request;
 
 class TrasladoSecundarioPropiosResource extends Resource
 {
-    protected static ?string $model = TrasladoSecundario::class;
+    protected static ?string $model = TrasladoSecundarioPropios::class;
 
     protected static ?string $navigationIcon = 'healthicons-o-crisis-response-center-person';
     protected static ?string $navigationGroup = 'Casos';

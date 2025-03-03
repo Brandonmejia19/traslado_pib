@@ -14,4 +14,8 @@ class TipoTraslado extends Model
     {
         return $this->hasMany(TrasladoSecundario::class);
     }
+    public function trasladossecundariospropios(): HasMany
+    {
+        return $this->hasMany(TrasladoSecundarioPropios::class);
+    }
 }

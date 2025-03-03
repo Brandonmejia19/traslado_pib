@@ -34,7 +34,7 @@ use Vormkracht10\TwoFactorAuth\Http\Livewire\Auth\Login;
 use Rmsramos\Activitylog\ActivitylogPlugin;
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
 use Cmsmaxinc\FilamentErrorPages\FilamentErrorPagesPlugin;
-
+use Devonab\FilamentEasyFooter\EasyFooterPlugin;
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -73,7 +73,11 @@ class AdminPanelProvider extends PanelProvider
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png|max:3024' //only accept jpeg and png files with a maximum size of 1MB
                     ),*/
-              //  FilamentErrorPagesPlugin::make(),
+                //  FilamentErrorPagesPlugin::make(),
+                EasyFooterPlugin::make()
+                ->withFooterPosition('footer')    ->withBorder(),
+
+
                 FilamentAuthenticationLogPlugin::make(),
                 FilamentSpatieRolesPermissionsPlugin::make(),
                 ActivitylogPlugin::make()->navigationGroup('Mantenimiento')->label('Registro')
@@ -90,7 +94,8 @@ class AdminPanelProvider extends PanelProvider
             ->favicon(asset('images/logocheques.svg'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([Dashboard::class
+            ->pages([
+                Dashboard::class
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

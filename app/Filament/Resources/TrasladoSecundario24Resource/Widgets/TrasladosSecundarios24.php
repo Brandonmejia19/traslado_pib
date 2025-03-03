@@ -44,23 +44,23 @@ class TrasladosSecundarios24 extends BaseWidget
             ->count();
 
         return [
-            Stat::make('Pendientes de agnación de recurso', $totalcriticospendientes)
-                ->description('Traslados críticos pendientes de asignación de recurso')
+            Stat::make('Traslados críticos pendientes de asignación de recurso', $totalcriticospendientes)
+               // ->description('Traslados críticos pendientes de asignación de recurso')
                 ->chartColor('danger')
-                ->chart([7, 2, 10, 3, 15, 4, 17])
-                ->descriptionIcon('healthicons-o-rural-post'),
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
+               // ->descriptionIcon('healthicons-o-rural-post'),
             Stat::make('Traslados pendientes de asignación de recurso', $totalpendientes)
-                ->description('Traslados Programados/Pendientes de asignacion de recurso')
+              //  ->description('Traslados Programados/Pendientes de asignacion de recurso')
                 ->chartColor('danger')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->descriptionIcon('healthicons-o-rural-post'),
             Stat::make('Traslados Activos', $totalactivos)
-                ->description('Traslados En curso')
+               // ->description('Traslados En curso')
                 ->chartColor('primary')
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->descriptionIcon('healthicons-o-ambulance'),
             Stat::make('Traslados en el día', $totaldia)
-                ->description('Cantidad de Traslados Registrados el día: ' . Carbon::now()->format('d/m/Y'))
+               // ->description('Cantidad de Traslados Registrados el día: ' . Carbon::now()->format('d/m/Y'))
                 ->chart([7, 2, 10, 3, 15, 4, 17])
                 ->chartColor('success')
                 ->descriptionIcon('healthicons-o-hospitalized'),
