@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b5aa15e162e657cc9396a13f3d64ec9d8fce3fc3',
+        'reference' => '8e276a51b9086fe01e962a952230496d94efe0ab',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -165,6 +165,15 @@
             'replaced' => array(
                 0 => '*',
             ),
+        ),
+        'devonab/filament-easy-footer' => array(
+            'pretty_version' => 'v1.1.0',
+            'version' => '1.1.0.0',
+            'reference' => '8f4ab1fd7524c99417f3d934d1274f1cae0ac79f',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../devonab/filament-easy-footer',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'dflydev/dot-access-data' => array(
             'pretty_version' => 'v3.0.3',
@@ -760,7 +769,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b5aa15e162e657cc9396a13f3d64ec9d8fce3fc3',
+            'reference' => '8e276a51b9086fe01e962a952230496d94efe0ab',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

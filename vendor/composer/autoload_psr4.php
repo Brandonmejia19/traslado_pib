@@ -158,6 +158,7 @@ return array(
     'DiogoGPinto\\AuthUIEnhancer\\Database\\Factories\\' => array($vendorDir . '/diogogpinto/filament-auth-ui-enhancer/database/factories'),
     'DiogoGPinto\\AuthUIEnhancer\\' => array($vendorDir . '/diogogpinto/filament-auth-ui-enhancer/src'),
     'Dflydev\\DotAccessData\\' => array($vendorDir . '/dflydev/dot-access-data/src'),
+    'Devonab\\FilamentEasyFooter\\' => array($vendorDir . '/devonab/filament-easy-footer/src'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'DebugBar\\' => array($vendorDir . '/php-debugbar/php-debugbar/src/DebugBar'),
     'Database\\Seeders\\' => array($baseDir . '/database/seeders', $vendorDir . '/laravel/pint/database/seeders'),

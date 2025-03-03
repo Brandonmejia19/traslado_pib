@@ -41,7 +41,9 @@ class TrasladoSecundarioResource extends Resource
 
     protected static ?string $navigationIcon = 'healthicons-o-cardiogram';
     protected static ?string $navigationGroup = 'Casos';
-    protected static ?string $label = 'Traslados Secundarios - Historico';
+    protected static ?string $label = 'Historico';
+    protected static ?string $pluralModelLabel = 'Historico';
+
     protected static ?string $navigationLabel = 'Historico';
     public static function form(Form $form): Form
     {
@@ -119,7 +121,6 @@ class TrasladoSecundarioResource extends Resource
                                     ->columnspan(1)
                                     ->numeric()
                                     ->readOnly()
-
                                     ->prefixicon('healthicons-o-call-centre')
                                     ->maxLength(length: 255),
                                 Forms\Components\TextInput::make('operador_nombre')
@@ -271,8 +272,6 @@ class TrasladoSecundarioResource extends Resource
                                     ->prefixicon('healthicons-o-stethoscope')
                                     ->maxLength(255),
                             ]),
-
-
                         Forms\Components\Fieldset::make('Origen / Destino de Traslado')
                             ->columns(4)
                             ->schema(components: [
@@ -753,7 +752,6 @@ class TrasladoSecundarioResource extends Resource
                                     ])
                                     ->inline()
                                     ->columnspan(4),
-
                             ]),
                         Forms\Components\Fieldset::make('Requerimientos de Parametros de Ventilación')
                             ->columns(5)
@@ -1205,7 +1203,7 @@ class TrasladoSecundarioResource extends Resource
                     ->label('Antecedentes Clínicos'),
 
                 // 3. formula_obstetrica (posible JSON, aquí se muestra como texto)
-               
+
 
                 // 4. jvpe_medico_recibe
                 Tables\Columns\TextColumn::make('jvpe_medico_recibe')

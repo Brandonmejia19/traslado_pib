@@ -12,7 +12,7 @@
 >
     <nav
         class="flex h-16 items-center gap-x-4 bg-white px-4 shadow-sm ring-1 ring-gray-950/5 md:px-6 lg:px-8 dark:bg-gray-900 dark:ring-white/10"
-    >
+    > <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 sm:text-2xl dark:text-white">Sistema de Gestión de Traslados Secundarios</h1>
         {{ \Filament\Support\Facades\FilamentView::renderHook('panels::topbar.start') }}
 
         @if (filament()->hasNavigation())

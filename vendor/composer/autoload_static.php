@@ -262,6 +262,7 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
             'DiogoGPinto\\AuthUIEnhancer\\Database\\Factories\\' => 46,
             'DiogoGPinto\\AuthUIEnhancer\\' => 27,
             'Dflydev\\DotAccessData\\' => 22,
+            'Devonab\\FilamentEasyFooter\\' => 27,
             'DeepCopy\\' => 9,
             'DebugBar\\' => 9,
             'Database\\Seeders\\' => 17,
@@ -915,6 +916,10 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
         array (
             0 => __DIR__ . '/..' . '/dflydev/dot-access-data/src',
         ),
+        'Devonab\\FilamentEasyFooter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/devonab/filament-easy-footer/src',
+        ),
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
@@ -1486,6 +1491,13 @@ class ComposerStaticInitbfe12996eeecb6fdc8713a9fd9d431f8
         'DeepCopy\\TypeFilter\\TypeFilter' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/TypeFilter/TypeFilter.php',
         'DeepCopy\\TypeMatcher\\TypeMatcher' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/TypeMatcher/TypeMatcher.php',
         'Detection\\MobileDetect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced/Detection/MobileDetect.php',
+        'Devonab\\FilamentEasyFooter\\EasyFooter' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/EasyFooter.php',
+        'Devonab\\FilamentEasyFooter\\EasyFooterPlugin' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/EasyFooterPlugin.php',
+        'Devonab\\FilamentEasyFooter\\EasyFooterServiceProvider' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/EasyFooterServiceProvider.php',
+        'Devonab\\FilamentEasyFooter\\Facades\\EasyFooter' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/Facades/EasyFooter.php',
+        'Devonab\\FilamentEasyFooter\\Livewire\\GitHubVersion' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/Livewire/GitHubVersion.php',
+        'Devonab\\FilamentEasyFooter\\Services\\GitHubService' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/Services/GitHubService.php',
+        'Devonab\\FilamentEasyFooter\\Testing\\TestsEasyFooter' => __DIR__ . '/..' . '/devonab/filament-easy-footer/src/Testing/TestsEasyFooter.php',
         'Dflydev\\DotAccessData\\Data' => __DIR__ . '/..' . '/dflydev/dot-access-data/src/Data.php',
         'Dflydev\\DotAccessData\\DataInterface' => __DIR__ . '/..' . '/dflydev/dot-access-data/src/DataInterface.php',
         'Dflydev\\DotAccessData\\Exception\\DataException' => __DIR__ . '/..' . '/dflydev/dot-access-data/src/Exception/DataException.php',

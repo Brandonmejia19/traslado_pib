@@ -11,6 +11,7 @@
         "blade-ui-kit/blade-icons": "^1.7",
         "brunocfalcao/blade-feather-icons": "^4.0",
         "cmsmaxinc/filament-error-pages": "^1.0",
+        "devonab/filament-easy-footer": "^1.1",
         "diogogpinto/filament-auth-ui-enhancer": "^1.0",
         "directorytree/ldaprecord": "^3.7",
         "directorytree/ldaprecord-laravel": "^3.3",

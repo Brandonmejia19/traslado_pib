@@ -103,6 +103,8 @@ class TrasladoSecundario extends Model
                 'correlativo',
                 'formula_obstetrica' => 'array',
                 'signos_vitales' => 'array',
+
+                'tipo_unidad_sugerida',
             ]);
     }
     use LogsActivity;
