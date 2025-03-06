@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use App\Observers\TrasladosPropios;
+use App\Models\TrasladoSecundarioPropios;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -20,6 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+        TrasladoSecundarioPropios::observe(TrasladosPropios::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TrasladoSecundarioPropiosResource\Pages;
+use App\Filament\Resources\TrasladoSecundarioPropiosResource\Widgets\TrasladosSecundariosPropios;
 use App\Filament\Resources\TrasladoSecundarioResource\RelationManagers;
 use App\Models\HospitalListado;
 use App\Models\Ambulancias;
@@ -45,59 +46,6 @@ class TrasladoSecundarioPropiosResource extends Resource
                 Forms\Components\Section::make(fn(callable $get) => 'Información de llamada - ' . ($get('correlativo') ?? 'Sin correlativo') . ' - ' . ($get('estado') ?? 'En creación'))
                     ->icon('healthicons-o-call-centre')
                     ->description(fn(callable $get) => 'Usuario Asignado: ' . ' ' . ($get('operador_nombre') ?? 'Sin usuario') . ' - Puesto: ' . ($get('operador_numero') ?? 'Sin numero'))
-                    ->headerActions([
-                        Action::make('cerrarCaso')
-                            ->hidden(
-                                fn(callable $get) =>
-                                $get('estado') == 'Finalizado' ||
-                                !in_array(auth()->user()->cargo, ['Doctor', 'Administrador'])
-                            )
-                            //->disabled()
-                            ->icon('heroicon-m-x-mark')
-                            ->color('danger')
-                            ->label('Cerrar Caso')
-                            ->requiresConfirmation() // Para que se muestre un modal de confirmación
-                            ->modalHeading('Cerrar Caso')
-                            //  ->modalSubheading('Por favor, ingrese la justificación y la razón para cerrar este caso.')
-                            ->form([
-                                Forms\Components\Textarea::make('justificacion_cierre')
-                                    ->label('Justificación de Cierre')
-                                    ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
-                                    ->required(),
-                                Forms\Components\Select::make('razon_cierre')
-                                    ->options([
-                                        'Resuelto' => 'Resuelto',
-                                        'No Resuelto' => 'No Resuelto',
-                                        'Cancelado' => 'Cancelado',
-                                        'Otro' => 'Otro',
-                                    ])
-                                    ->label('Razón de Cierre')
-                                    ->required(),
-                                Forms\Components\TextInput::make('usuario_cierre')
-                                    ->label('Usuario')
-                                    ->default(Auth::user()->name)
-                                    ->disabled(), // Este campo se muestra solo para información, no editable
-                            ])
-                            ->action(function (array $data, $record) {
-                                if (!$record) {
-                                    Notification::make()
-                                        ->title('Error')
-                                        ->body('No se encontró el caso / Caso aun no creado.')
-                                        ->danger()
-                                        ->send();
-                                    return;
-                                }
-
-                                // Actualizar el registro con los datos de cierre
-                                $record->update([
-                                    'estado' => 'Finalizado',
-                                    'justificacion_cierre' => $data['justificacion_cierre'],
-                                    'razon_cierre' => $data['razon_cierre'],
-                                    'usuario_cierre' => Auth::user()->name, // Usuario autenticado
-                                ]);
-                                Notification::make()->title('Caso cerrado correctamente')->success()->send();
-                            }),
-                    ])
                     ->schema(components: [
                         Forms\Components\TextInput::make('numero_llamada')
                             ->placeholder('Telefono Origen')
@@ -143,11 +91,11 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->required()
                                     ->options([
                                         'Traslado de Paciente' => 'Traslado de Paciente',
-                                        'Trasporte de Paciente' => 'Trasporte de Paciente'
+                                        'Transporte de Paciente' => 'Transporte de Paciente'
                                     ])
                                     ->icons([
                                         'Traslado de Paciente' => 'healthicons-o-hospitalized',
-                                        'Trasporte de Paciente' => 'healthicons-o-ambulance',
+                                        'Transporte de Paciente' => 'healthicons-o-ambulance',
                                     ])
                                     ->inline()->columnSpanFull(),
                                 Forms\Components\ToggleButtons::make('tipo_traslado')
@@ -171,7 +119,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->columnSpanFull(),
                                 Forms\Components\ToggleButtons::make('tipo_traslado')
                                     ->label('Tipo de Transporte')->required()
-                                    ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Trasporte de Paciente')
+                                    ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Transporte de Paciente')
                                     ->options(TipoTraslado::whereIn('id', [1, 4, 9])->pluck('nombre', 'id'))
                                     ->icons([
                                         1 => 'healthicons-o-ambulance',
@@ -323,8 +271,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->numeric()->columnspan(1)
                                     ->prefixicon('healthicons-o-hospitalized')
                                     ->placeholder('Número de Cama')
-                                    ->label('Número de Cama')
-                                    ->maxLength(3),
+                                    ->label('Número de Cama'),
                                 Forms\Components\TextInput::make('origen_institucion')
                                     ->label('Otro Destino / Domicilio')->columnspan(2)
                                     ->placeholder('Nombre de la Institución / Dirección')
@@ -406,7 +353,7 @@ class TrasladoSecundarioPropiosResource extends Resource
 
                                 Forms\Components\TextInput::make('nombre_medico_recibe')
                                     ->placeholder('Nombre del Médico que Recibe')
-                                    ->label('Nombre médico recepetor')->columnspan(2)
+                                    ->label('Nombre médico o persona receptora')->columnspan(2)
 
                                     ->prefixicon('healthicons-o-doctor')
                                     ->maxLength(255),
@@ -461,6 +408,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->prefixicon('heroicon-o-calendar'),
 
                                 Forms\Components\Select::make('tipo_unidad_sugerida')
+                                    ->disabled(auth()->user()->cargo != 'Médico')
                                     ->prefixicon('healthicons-o-ambulance')
                                     ->label('Tipo Unidad Sugeridad')
                                     ->options([
@@ -487,6 +435,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                             ->label('Unidad')
                                             ->options(Ambulancias::query()->pluck('unidad', 'unidad'))
                                             ->searchable()
+                                            ->disabled(auth()->user()->cargo === 'Operador')
                                             ->columnspan(1)
                                             ->prefixicon('healthicons-o-ambulance'),
                                     ])->columnspan('full'),
@@ -542,7 +491,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->maxLength(255)
                                     ->columnspan(4),
                             ]),
-                        Forms\Components\Fieldset::make('Estado de Paciente')
+                        Forms\Components\Fieldset::make('ESTADO DE PACIENTE')
                             ->columns(4)
                             ->schema([
                                 Forms\Components\ToggleButtons::make('tipo_paciente')
@@ -639,10 +588,10 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     Forms\Components\TimePicker::make('hora_obstetrica')
                                         ->default(fn() => Carbon::now()->format('H:i'))
                                         ->prefixicon('heroicon-o-clock'),
-                                    Forms\Components\TextInput::make('FCF')
+                                    Forms\Components\TextInput::make('fcf')
                                         ->prefixicon('healthicons-o-lungs')
                                         ->placeholder('0 ppm')
-                                        ->label('FCF')
+                                        ->label('fcf')
                                         ->maxLength(255),
                                     Forms\Components\ToggleButtons::make('membranas_integras')
                                         ->label('¿Membranas Integras?')
@@ -684,31 +633,69 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         ->placeholder('Datos del RN / Neonato')
                                         ->columnSpanFull(),
                                 ]),
-                        Forms\Components\Fieldset::make('Signos Vitales de Paciente')
+                        Forms\Components\Fieldset::make('SIGNOS VITALES')
                             ->schema([
                                 Forms\Components\Repeater::make('signos_vitales')
                                     ->addActionLabel('Nuevo Signo Vital')
+                                    ->extraAttributes(['class' => 'bg-yellow-500 text-white'])
                                     ->collapseAllAction(
                                         fn(Action $action) => $action->label('Esconder todo'),
                                     )
                                     ->deletable(false)
                                     ->reorderable(false)
                                     ->schema([
-                                        Forms\Components\TextInput::make('presion_arterial')->prefixicon('healthicons-o-blood-pressure')->placeholder('120/80'),
-                                        Forms\Components\TextInput::make('FC')->label('FC')->prefixicon('healthicons-o-heart')->placeholder('95 ppm'),
-                                        Forms\Components\TextInput::make('FR')->label('FR')->prefixicon('healthicons-o-lungs')->placeholder('15'),
-                                        Forms\Components\TextInput::make(name: 'Temp.')->label('Temperatura')->prefixicon('healthicons-o-thermometer')->placeholder('36.5 °C'),
-                                        Forms\Components\TextInput::make(name: 'satoxi')->label('Sat. Oxígeno')->prefixicon('healthicons-o-oxygen-tank')->placeholder('95%'),
-                                        Forms\Components\TextInput::make(name: 'HGT')->label('HGT')->prefixicon('healthicons-o-blood-bag')->placeholder('80 mg/dl'),
-                                        Forms\Components\TextInput::make(name: 'glasgow')->label('Escala Glasgow')->prefixicon('healthicons-o-neurology')->placeholder('15 pts'),
-                                        Forms\Components\DateTimePicker::make(name: 'Hora')->label('Hora de Toma')->prefixicon('heroicon-o-clock'),
+                                        Forms\Components\TextInput::make('presion_arterial')
+                                            ->prefixicon('healthicons-o-blood-pressure')
+                                            ->placeholder('120/80')
+                                            ->readOnly(fn($state) => !empty($state)),
 
+                                        Forms\Components\TextInput::make('FC')
+                                            ->label('FC')
+                                            ->prefixicon('healthicons-o-heart')
+                                            ->placeholder('95 ppm')
+                                            ->readOnly(fn($state) => !empty($state)),
+
+                                        Forms\Components\TextInput::make('fr')
+                                            ->label('FR')
+                                            ->prefixicon('healthicons-o-lungs')
+                                            ->placeholder('15')
+                                            ->readOnly(fn($state) => !empty($state)),
+
+                                        Forms\Components\TextInput::make('Temp.')
+                                            ->label('Temperatura')
+                                            ->prefixicon('healthicons-o-thermometer')
+                                            ->placeholder('36.5 °C')
+                                            ->readOnly(fn($state) => !empty($state)),
+
+                                        Forms\Components\TextInput::make('satoxi')
+                                            ->label('Sat. Oxígeno')
+                                            ->prefixicon('healthicons-o-oxygen-tank')
+                                            ->placeholder('95%')
+                                            ->readOnly(fn($state) => !empty($state)),
+
+                                        Forms\Components\TextInput::make('HGT')
+                                            ->label('HGT')
+                                            ->prefixicon('healthicons-o-blood-bag')
+                                            ->placeholder('80 mg/dl')
+                                            ->readOnly(fn($state) => !empty($state)),
+
+                                        Forms\Components\TextInput::make('glasgow')
+                                            ->label('Escala Glasgow')
+                                            ->prefixicon('healthicons-o-neurology')
+                                            ->placeholder('15 pts')
+                                            ->readOnly(fn($state) => !empty($state)),
+
+                                        Forms\Components\DateTimePicker::make('Hora')
+                                            ->label('Hora de Toma')
+                                            ->prefixicon('heroicon-o-clock')
+                                            ->readOnly(fn($state) => !empty($state)),
                                     ])
                                     ->collapsible()
                                     ->columnSpanFull()
-                                    ->columns(6),
+                                    ->columns(6)
+                                    ->defaultItems(1) // Permite que el usuario agregue nuevos registros
                             ]),
-                        Forms\Components\Fieldset::make('Requerimientos de Paciente')
+                        Forms\Components\Fieldset::make('REQUERIMIENTOS')
                             ->columns(5)
                             ->schema([
                                 Forms\Components\TextInput::make(name: 'fio2')
@@ -746,7 +733,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->columnspan(4),
 
                             ]),
-                        Forms\Components\Fieldset::make('Requerimientos de Parametros de Ventilación')
+                        Forms\Components\Fieldset::make('PARAMETROS DE VENTILACIÓN')
                             ->columns(5)
                             ->schema([
                                 Forms\Components\ToggleButtons::make('asistencia_ventilatoria')
@@ -800,19 +787,19 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->placeholder('Relación I:E')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->label('Relación I:E'),
-                                Forms\Components\TextInput::make(name: 'FR')
+                                Forms\Components\TextInput::make(name: 'fr')
                                     ->prefixicon('healthicons-o-blood-bag')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
-                                    ->label('FR')
-                                    ->placeholder('FR'),
-                                Forms\Components\TextInput::make(name: 'PEEP')
-                                    ->label('PEEP')
+                                    ->label('fr')
+                                    ->placeholder('fr'),
+                                Forms\Components\TextInput::make(name: 'peep')
+                                    ->label('peep')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->prefixicon('healthicons-o-blood-bag')
-                                    ->placeholder('PEEP'),
-                                Forms\Components\Select::make(name: 'TRIGGER')
+                                    ->placeholder('peep'),
+                                Forms\Components\Select::make(name: 'trigger')
                                     ->options(['SI' => 'SI', 'NO' => 'NO'])
-                                    ->label('TRIGGER')
+                                    ->label('trigger')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->prefixicon('healthicons-o-blood-bag'),
                                 Forms\Components\TextInput::make('bombas_infusion')
@@ -822,10 +809,11 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->prefixicon('healthicons-o-blood-bag'),
                             ]),
 
-                        Forms\Components\Fieldset::make('Notas de Seguimiento')
+                        Forms\Components\Fieldset::make('NOTAS DE SEGUIMIENTO')
                             ->schema([
                                 Forms\Components\TextArea::make('notas_seguimiento')
                                     ->label('Notas')
+                                    ->maxLength(255)
                                     ->placeholder('Notas de Seguimiento')
                                     ->columnSpanFull(),
                                 Forms\Components\Fieldset::make('Información de Usuario')
@@ -952,6 +940,8 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('edad_paciente')
                     ->numeric()
+                    ->description(fn(TrasladoSecundarioPropios $record): string => $record->componente_edad)
+
                     ->label('Edad')
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
@@ -1148,12 +1138,8 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('hora_obstetrica')
-                    ->default('---')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('FCF')
+
+                Tables\Columns\TextColumn::make('fcf')
                     ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -1183,58 +1169,276 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
+                Tables\Columns\TextColumn::make('modo_ventilacion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('componente_edad')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('bombas_infusion')
                     ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('servicio')
+                Tables\Columns\TextColumn::make('servicio_origen')
                     ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('numero_cama')
+                Tables\Columns\TextColumn::make('servicio_destino')
                     ->default('---')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-
+                Tables\Columns\TextColumn::make('numero_cama_origen')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('numero_cama_destino')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('asunto_traslado')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Asunto del Traslado'),
+
+                // 2. antecendetes_clinicos (asegúrate que en fillable esté escrito igual)
+                Tables\Columns\TextColumn::make('antecendetes_clinicos')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Antecedentes Clínicos'),
+
+                // 3. formula_obstetrica (posible JSON, aquí se muestra como texto)
+
+
+                // 4. jvpe_medico_recibe
+                Tables\Columns\TextColumn::make('jvpe_medico_recibe')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('JVPE Médico Recibe'),
+
+                // 5. datos_rn_neonato
+                Tables\Columns\TextColumn::make('datos_rn_neonato')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Datos RN/Neonato'),
+
+                // 6. requerimientos_oxigenoterapia
+                Tables\Columns\TextColumn::make('requerimientos_oxigenoterapia')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Req. Oxigenoterapia'),
+
+                // 7. asistencia_ventilatoria
+                Tables\Columns\TextColumn::make('asistencia_ventilatoria')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Asistencia Ventilatoria'),
+
+                // 8. posicion
+                Tables\Columns\TextColumn::make('posicion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Posición'),
+
+                // 9. fio2
+                Tables\Columns\TextColumn::make('fio2')
+                    ->default('---')
+                    ->numeric() // si lo manejas como número
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('FiO2'),
+
+
+                // 11. modo_ventilacion
+                Tables\Columns\TextColumn::make('modo_ventilacion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Modo de Ventilación'),
+
+                // 12. vt
+                Tables\Columns\TextColumn::make('vt')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('VT'),
+
+                // 13. volmin
+                Tables\Columns\TextColumn::make('volmin')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Vol. Min'),
+
+                // 14. relacion_ie
+                Tables\Columns\TextColumn::make('relacion_ie')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Relación I:E'),
+
+                // 15. fr
+                Tables\Columns\TextColumn::make('fr')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('fr'),
+
+                // 16. peep
+                Tables\Columns\TextColumn::make('peep')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('peep'),
+
+                // 17. trigger
+                Tables\Columns\TextColumn::make('trigger')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('trigger'),
+
+                // 18. justificacion_cierre
+                Tables\Columns\TextColumn::make('justificacion_cierre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Justificación de Cierre'),
+
+                // 19. razon_cierre
+                Tables\Columns\TextColumn::make('razon_cierre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Razón de Cierre'),
+
+                // 20. usuario_cierre
+                Tables\Columns\TextColumn::make('usuario_cierre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Usuario que Cierra'),
+
+                // 21. notas_seguimiento
+                Tables\Columns\TextColumn::make('notas_seguimiento')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Notas de Seguimiento'),
+
+                // 22. user_id (si deseas mostrar el ID del usuario o su nombre)
+
             ])
             ->filters([
                 //
             ])
-            ->paginated([10, 25, 50, 100])
+            ->paginated([10, 25, 50])
             ->actions([
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)
-                    ->iconButton()
-                    ->modalIcon('healthicons-o-mobile-clinic')
-                    ->icon('heroicon-o-eye')->color('warning')
-                    ->modalAlignment(Alignment::Center)
-                    ->modalHeading('Traslados Secundarios - Vista Rápida'),
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
-                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)
-                    ->modalWidth(
-                        MaxWidth::SevenExtraLarge
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')
+                    ->hidden(fn(TrasladoSecundarioPropios $record) => $record->estado === 'Finalizado'),
+                Tables\Actions\Action::make('CerrarCaso')
+                    ->modalWidth(MaxWidth::FourExtraLarge)
+                    ->hidden(
+                        fn(TrasladoSecundarioPropios $record) =>
+                        $record->estado == 'Finalizado' ||
+                        !in_array(auth()->user()->cargo, ['Médico', 'Administrador'])
                     )
+                    ->icon('heroicon-o-archive-box-x-mark')
+                    ->color('danger')
+                    ->slideOver()
                     ->iconButton()
-                    ->hidden(fn($record) => $record->estado === 'Finalizado')
-                    ->modalIcon('healthicons-o-mobile-clinic')
-                    ->color('primary')
-                    ->modalAlignment(Alignment::Center)
-                    ->modalHeading('Traslados Secundarios - Edición'),
-                //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
+                    ->label('Cerrar Caso')
+                    ->requiresConfirmation() // Muestra un modal de confirmación
+                    ->form([
+                        Forms\Components\Textarea::make('justificacion_cierre')
+                            ->label('Justificación de Cierre')
+                            ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
+                            ->required(),
+                        Forms\Components\Select::make('razon_cierre')
+                            ->options([
+                                'Resuelto' => 'Resuelto',
+                                'No Resuelto' => 'No Resuelto',
+                                'Cancelado' => 'Cancelado',
+                                'Otro' => 'Otro',
+                            ])
+                            ->placeholder('Seleccione una opción')
+                            ->label('Razón de Cierre')
+                            ->required(),
+                        Forms\Components\TextInput::make('usuario_cierre')
+                            ->label('Usuario')
+                            ->default(Auth::user()->name)
+                            ->disabled(), // Solo para información, no editable
+                    ])
+                    ->action(function (array $data, TrasladoSecundarioPropios $record) {
+                        // Actualizar el registro con los datos de cierre
+                        $record->update([
+                            'estado' => 'Finalizado',
+                            'justificacion_cierre' => $data['justificacion_cierre'],
+                            'razon_cierre' => $data['razon_cierre'],
+                            'usuario_cierre' => Auth::user()->name, // Usuario autenticado
+                        ]);
+                        Notification::make()
+                            ->title('Caso cerrado correctamente / Correlativo: ' . $record->correlativo)
+                            ->body('El caso ha sido cerrado correctamente por el usuario: ' . Auth::user()->name)
+                            ->success()
+                            ->sendToDatabase(Auth::user())
+                            ->send();
+                    })
+                // ¡Esto cierra automáticamente el modal al completar la acción!,
+
+
+
             ], position: ActionsPosition::BeforeCells)
             ->defaultGroup('estado')
-
             ->bulkActions([
 
             ]);
     }
-
     public static function getRelations(): array
     {
         return [

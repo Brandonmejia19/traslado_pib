@@ -14,7 +14,7 @@ class ListAmbulancias extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            AdvancedStatsOverviewWidget::class,
+          //  AdvancedStatsOverviewWidget::class,
         ];
     }
     protected function getHeaderActions(): array

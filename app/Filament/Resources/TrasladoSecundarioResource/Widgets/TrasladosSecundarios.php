@@ -34,7 +34,7 @@ class TrasladosSecundarios extends BaseWidget
 
         $totaltransporte = TrasladoSecundario::query()
             ->where('estado', 'Finalizado')
-            ->where('asunto_traslado', 'Trasporte de Paciente')
+            ->where('asunto_traslado', 'Transporte de Paciente')
             ->count();
 
         return [

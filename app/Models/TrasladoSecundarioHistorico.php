@@ -63,7 +63,7 @@ class TrasladoSecundarioHistorico extends Model
                 'dilatacion',
                 'borramiento',
                 'hora_obstetrica',
-                'FCF',
+                'fcf',
                 'membranas_integras',
                 'mov_fetales',
                 'trabajo_parto',
@@ -76,7 +76,7 @@ class TrasladoSecundarioHistorico extends Model
                 'asistencia_ventilatoria',
                 'bombas_infusion',
                 'servicio_origen',
-                'numero_cama_orige',
+                'numero_cama_origen',
                 'servicio_destino',
                 'numero_cama_destino',
 
@@ -93,9 +93,9 @@ class TrasladoSecundarioHistorico extends Model
                 'vt',
                 'volmin',
                 'relacion_ie',
-                'FR',
-                'PEEP',
-                'TRIGGER',
+                'fr',
+                'peep',
+                'trigger',
 
                 'justificacion_cierre',
                 'razon_cierre',
@@ -128,6 +128,10 @@ class TrasladoSecundarioHistorico extends Model
         'destino_institucion',
         'origen_traslado',
         'origen_institucion',
+        'servicio_origen',
+        'numero_cama_origen',
+        'servicio_destino',
+        'numero_cama_destino',
 
         'nombre_medico_recibe',
         'telefono_medico_recibe',
@@ -154,7 +158,7 @@ class TrasladoSecundarioHistorico extends Model
         'dilatacion',
         'borramiento',
         'hora_obstetrica',
-        'FCF',
+        'fcf',
         'membranas_integras',
         'mov_fetales',
         'trabajo_parto',
@@ -167,7 +171,7 @@ class TrasladoSecundarioHistorico extends Model
         'asistencia_ventilatoria',
         'bombas_infusion',
         'servicio',
-        'numero_cama',
+    //    'numero_cama',
 
         ///NUEVOS DATOS
         'prioridad',
@@ -182,9 +186,9 @@ class TrasladoSecundarioHistorico extends Model
         'vt',
         'volmin',
         'relacion_ie',
-        'FR',
-        'PEEP',
-        'TRIGGER',
+        'fr',
+        'peep',
+        'trigger',
 
         'justificacion_cierre',
         'razon_cierre',
@@ -204,7 +208,13 @@ class TrasladoSecundarioHistorico extends Model
         static::created(function ($llamada) {
             $fecha = now()->format('dmY');//His
             $usuario = auth()->user()->id;
-            $tipoCasoInicial = strtoupper(substr('Traslado', 0, 2));
+            $asunto = $llamada->asunto_traslado;
+
+            $tipoCasoInicial = match ($asunto) {
+                'Transporte de Paciente' => 'TP',
+                'Traslado de Paciente' => 'TR',
+                default => 'ND', // 'ND' en caso de que no coincida con ninguno
+            };
             $contador = self::whereDate('created_at', now()->format('Y-m-d'))->count();
             $numeroSecuencial = str_pad($contador, 4, '0', STR_PAD_LEFT);
             $correlativo = "{$fecha}{$tipoCasoInicial}{$numeroSecuencial}";

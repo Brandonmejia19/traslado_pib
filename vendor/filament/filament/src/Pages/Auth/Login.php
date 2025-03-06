@@ -96,24 +96,33 @@ try {
         $this->throwFailureValidationException();
     }
 
-    // Captura la IP
+    // Captura la IP del usuario autenticado
     $ip = Request::ip();
     if (config('app.behind_cdn')) {
         $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
     }
 
-    // Extraer el último segmento de la IP y determinar el cargo
+    // Extraer el último segmento de la IP y determinar el rol
     $segments = explode('.', $ip);
-    $lastDigits = array_slice($segments, -1);
-    $total = implode('.', $lastDigits);
-    $cargo = ($total >= 10 && $total <= 40) ? 'Medico' : 'Operador';
+    $lastSegment = end($segments);
 
-    $user->puesto = $total;
-    $user->cargo = $cargo;
+    // Determinar el rol basado en la IP
+    $roleName = ($lastSegment >= 30 && $lastSegment <= 40) ? 'Administrador' : 'Operador';
+    $roleName = ($lastSegment >= 30 && $lastSegment <= 40) ? 'Administrador' : 'Operador';
+
+    // Buscar o crear el rol en la base de datos
+    $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
+
+    // Asignar el rol al usuario (se elimina el rol anterior si tenía uno)
+    $user->syncRoles([$role]);
+
+    // Guardar los datos adicionales en el usuario
+    $user->puesto = $lastSegment;
+    $user->cargo = $roleName;
     $user->save();
 
+    // Autenticar en Filament
     Filament::auth()->login($user, $data['remember'] ?? false);
-
     session()->regenerate();
 
     return app(LoginResponse::class);
