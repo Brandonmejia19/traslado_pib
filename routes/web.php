@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PDFController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
+Route::get('/pdf/traslado/{id}', [PDFController::class, 'generarPDF'])->name('pdf.traslado');
 Route::get('/', function () {
     return redirect('/ticketeria/login');
 });

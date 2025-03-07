@@ -31,6 +31,7 @@ use Filament\Support\Enums\Alignment;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Support\RawJs;
 use Illuminate\Support\Facades\Request;
+use Parallax\FilamentComments\Tables\Actions\CommentsAction;
 
 class TrasladoSecundarioPropiosResource extends Resource
 {
@@ -98,11 +99,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         'Transporte de Paciente' => 'healthicons-o-ambulance',
                                     ])
                                     ->inline()->columnSpanFull(),
-                                Forms\Components\ToggleButtons::make('tipo_traslado')
-                                    ->label('Tipo de Traslado')->required()
+                                Forms\Components\ToggleButtons::make('tipo_traslado_id')
+                                    ->label('Tipo de Traslado')
                                     ->required()
+                                    ->reactive()
                                     ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
-                                    ->options(TipoTraslado::all()->pluck('nombre', 'id'))
+                                    ->options(TipoTraslado::all()->pluck('nombre', 'id')) // Se muestra el nombre, pero guarda el ID
                                     ->icons([
                                         1 => 'healthicons-o-ambulance',
                                         2 => 'healthicons-o-ambulance',
@@ -113,12 +115,26 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         7 => 'healthicons-o-ambulance',
                                         8 => 'healthicons-o-ambulance',
                                         9 => 'healthicons-o-ambulance',
-
                                     ])
+                                    ->afterStateUpdated(
+                                        fn($state, callable $set) =>
+                                        $set('tipo_traslado', TipoTraslado::find($state)?->nombre)
+                                    ) // Cuando el usuario selecciona, actualiza el nombre automáticamente
                                     ->inline()
                                     ->columnSpanFull(),
-                                Forms\Components\ToggleButtons::make('tipo_traslado')
-                                    ->label('Tipo de Transporte')->required()
+
+                                Forms\Components\TextInput::make('tipo_traslado')
+                                    ->label('Nombre del Tipo de Traslado')
+                                    ->readOnly()
+                                    ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
+                                    ->columnSpanFull()
+                                    ->reactive(),
+
+                                Forms\Components\ToggleButtons::make('tipo_traslado_id')
+                                    ->label('Tipo de Transporte')->required()->afterStateUpdated(
+                                        fn($state, callable $set) =>
+                                        $set('tipo_traslado', TipoTraslado::find($state)?->nombre)
+                                    ) // Se ejecuta cuando el estado cambia
                                     ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Transporte de Paciente')
                                     ->options(TipoTraslado::whereIn('id', [1, 4, 9])->pluck('nombre', 'id'))
                                     ->icons([
@@ -641,9 +657,11 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->collapseAllAction(
                                         fn(Action $action) => $action->label('Esconder todo'),
                                     )
-                                    ->deletable(false)
+                                    ->deletable(true)
                                     ->reorderable(false)
                                     ->schema([
+
+                                        ///CAMBIAR LOGICA A QUE AL MENOS UNO ESTE LLENO DESACTIVAR LSO DEMAS
                                         Forms\Components\TextInput::make('presion_arterial')
                                             ->prefixicon('healthicons-o-blood-pressure')
                                             ->placeholder('120/80')
@@ -1377,6 +1395,7 @@ class TrasladoSecundarioPropiosResource extends Resource
             ])
             ->paginated([10, 25, 50])
             ->actions([
+               // CommentsAction::make()->icon(icon: 'heroicon-o-chat-bubble-left-right')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton(),
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')

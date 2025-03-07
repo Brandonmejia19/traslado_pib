@@ -57,7 +57,7 @@
                 @class([
                     'fi-sidebar-item-icon h-6 w-6',
                     'text-white dark:text-white' => ! $active,
-                    'text-orange-500 dark:text-white-500' => $active,
+                    'text-orange-500 dark:text-gray-500' => $active,
                 ])
             />
         @endif
@@ -101,7 +101,7 @@
             @class([
                 'fi-sidebar-item-label flex-1 truncate font-medium text-sm',
                 'text-white dark:text-white-500' => ! $active,
-                'text-primary-200 dark:text-white-400' => $active,
+                'text-primary-200 dark:text-gray-500' => $active,
             ])
         >
             {{ $slot }}

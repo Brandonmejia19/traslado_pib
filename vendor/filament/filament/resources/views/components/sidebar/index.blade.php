@@ -34,7 +34,7 @@
         @endif
     @endif
     @class([
-        'fi-sidebar fixed inset-y-0 start-0 z-30 flex flex-col h-screen content-start bg-primary-800 transition-all dark:bg-gray-900 lg:z-0 lg:bg-transparent lg:shadow-none lg:ring-0 lg:transition-none dark:lg:bg-transparent',
+        'fi-sidebar fixed inset-y-0 start-0 z-30 flex flex-col h-screen content-start bg-primary-800 transition-all dark:bg-gray-900 lg:z-0 lg:bg-transparent lg:shadow-none lg:ring-0 lg:transition-none dark:lg:bg-gray',
         'lg:translate-x-0 rtl:lg:-translate-x-0' => ! (filament()->isSidebarCollapsibleOnDesktop() || filament()->isSidebarFullyCollapsibleOnDesktop() || filament()->hasTopNavigation()),
         'lg:-translate-x-full rtl:lg:translate-x-full' => filament()->hasTopNavigation(),
     ])
@@ -96,7 +96,7 @@
 
     <nav
         class="fi-sidebar-nav flex-grow flex flex-col gap-y-7 overflow-y-auto overflow-x-hidden px-6 py-8"
-        style="scrollbar-gutter: stable; background-color: #1B3C71"
+        style="scrollbar-gutter: stable; background-color: #1B3C71; dark:background-color: bg-gray;"
     >
         {{ \Filament\Support\Facades\FilamentView::renderHook('panels::sidebar.nav.start') }}
 

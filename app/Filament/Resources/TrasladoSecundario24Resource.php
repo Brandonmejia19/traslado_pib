@@ -12,6 +12,7 @@ use App\Models\ISSListado;
 use App\Models\PrivadoListado;
 use App\Models\TrasladoSecundario;
 use App\Models\TipoTraslado;
+use App\Models\TrasladoSecundarioPropios;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -29,6 +30,7 @@ use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Support\Facades\Request;
+use Parallax\FilamentComments\Tables\Actions\CommentsAction;
 
 class TrasladoSecundario24Resource extends Resource
 {
@@ -99,11 +101,12 @@ class TrasladoSecundario24Resource extends Resource
                                         'Transporte de Paciente' => 'healthicons-o-ambulance',
                                     ])
                                     ->inline()->columnSpanFull(),
-                                Forms\Components\ToggleButtons::make('tipo_traslado')
-                                    ->label('Tipo de Traslado')->required()
+                                Forms\Components\ToggleButtons::make('tipo_traslado_id')
+                                    ->label('Tipo de Traslado')
                                     ->required()
+                                    ->reactive()
                                     ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
-                                    ->options(TipoTraslado::all()->pluck('nombre', 'id'))
+                                    ->options(TipoTraslado::all()->pluck('nombre', 'id')) // Se muestra el nombre, pero guarda el ID
                                     ->icons([
                                         1 => 'healthicons-o-ambulance',
                                         2 => 'healthicons-o-ambulance',
@@ -114,12 +117,26 @@ class TrasladoSecundario24Resource extends Resource
                                         7 => 'healthicons-o-ambulance',
                                         8 => 'healthicons-o-ambulance',
                                         9 => 'healthicons-o-ambulance',
-
                                     ])
+                                    ->afterStateUpdated(
+                                        fn($state, callable $set) =>
+                                        $set('tipo_traslado', TipoTraslado::find($state)?->nombre)
+                                    ) // Cuando el usuario selecciona, actualiza el nombre automáticamente
                                     ->inline()
                                     ->columnSpanFull(),
-                                Forms\Components\ToggleButtons::make('tipo_traslado')
-                                    ->label('Tipo de Transporte')->required()
+
+                                Forms\Components\TextInput::make('tipo_traslado')
+                                    ->label('Nombre del Tipo de Traslado')
+                                    ->readOnly()
+                                    ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
+                                    ->columnSpanFull()
+                                    ->reactive(),
+
+                                Forms\Components\ToggleButtons::make('tipo_traslado_id')
+                                    ->label('Tipo de Transporte')->required()->afterStateUpdated(
+                                        fn($state, callable $set) =>
+                                        $set('tipo_traslado', TipoTraslado::find($state)?->nombre)
+                                    ) // Se ejecuta cuando el estado cambia
                                     ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Transporte de Paciente')
                                     ->options(TipoTraslado::whereIn('id', [1, 4, 9])->pluck('nombre', 'id'))
                                     ->icons([
@@ -1378,6 +1395,14 @@ class TrasladoSecundario24Resource extends Resource
             ])
             ->paginated([10, 25, 50])
             ->actions([
+                Tables\Actions\Action::make('descargarPDF')->hidden(auth()->user()->cargo === 'Operador' || auth()->user()->cargo === 'Gestor')
+                    ->label('Descargar PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->iconButton()
+                    ->url(fn(TrasladoSecundario $record) => route('pdf.traslado', $record->id))
+                    ->openUrlInNewTab(),
+                CommentsAction::make()->icon(icon: 'heroicon-o-chat-bubble-left-right')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton(),
+
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')

@@ -154,7 +154,7 @@ class TrasladoSecundarioGestores extends Model
         'signos_vitales',//json
 
         'jvpe_medico_recibe',
-
+        'jvpe_medico_entrega',
         'dilatacion',
         'borramiento',
         'hora_obstetrica',
@@ -171,7 +171,7 @@ class TrasladoSecundarioGestores extends Model
         'asistencia_ventilatoria',
         'bombas_infusion',
         'servicio',
-    //    'numero_cama',
+        //    'numero_cama',
 
         ///NUEVOS DATOS
         'prioridad',

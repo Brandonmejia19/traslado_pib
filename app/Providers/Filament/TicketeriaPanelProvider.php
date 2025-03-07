@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Resources\TrasladoSecundarioResource24;
 use Filament\Http\Middleware\Authenticate;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
@@ -69,6 +70,9 @@ class TicketeriaPanelProvider extends PanelProvider
             ->login()
             ->databaseNotifications()
             ->brandLogo(asset('images/logo222.svg'))
+            // Configura el logo para el modo oscuro
+            ->darkModeBrandLogo(asset('images/logocheques.svg'))
+            
             ->favicon(asset('images/logocheques.svg'))
             ->plugins([
                 EasyFooterPlugin::make(),

@@ -154,6 +154,7 @@ class TrasladoSecundarioHistorico extends Model
         'signos_vitales',//json
 
         'jvpe_medico_recibe',
+        'jvpe_medico_entrega',
 
         'dilatacion',
         'borramiento',

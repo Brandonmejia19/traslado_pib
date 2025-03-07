@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\TipoTraslado;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Parallax\FilamentComments\Models\Traits\HasFilamentComments;
 
 class TrasladoSecundarioPropios extends Model
 {
-    use LogsActivity;
+    use LogsActivity,HasFilamentComments;
 
     protected $table = 'traslado_secundarios';
     public function getActivitylogOptions(): LogOptions
@@ -154,6 +155,7 @@ class TrasladoSecundarioPropios extends Model
         'signos_vitales',//json
 
         'jvpe_medico_recibe',
+        'jvpe_medico_entrega',
 
         'dilatacion',
         'borramiento',
