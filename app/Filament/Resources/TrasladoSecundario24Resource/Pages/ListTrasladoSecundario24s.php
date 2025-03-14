@@ -9,6 +9,7 @@ use App\Filament\Resources\TrasladoSecundario24Resource\Widgets\TrasladosSecunda
 use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Support\Enums\IconPosition;
+use Carbon\Carbon;
 class ListTrasladoSecundario24s extends ListRecords
 {
     protected static string $resource = TrasladoSecundario24Resource::class;
@@ -21,6 +22,7 @@ class ListTrasladoSecundario24s extends ListRecords
                 ->icon('heroicon-s-information-circle')
                 ->iconPosition(IconPosition::After)
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('estado', 'En curso')),
+
             'Finalizado' => Tab::make()
                 ->icon('heroicon-s-x-circle')
                 ->badgeColor('success')

@@ -62,6 +62,7 @@ return [
     | a global endpoint for temporary storage. You may configure this below:
     |
     */
+'cache' => true,
 
     'temporary_file_upload' => [
         'disk' => null,        // Example: 'local', 's3'              | Default: 'default'

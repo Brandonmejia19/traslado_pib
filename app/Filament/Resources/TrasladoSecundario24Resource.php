@@ -551,7 +551,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->inline()
                                     ->required(),
                                 Forms\Components\ToggleButtons::make('tipo_critico')
-                                ->required()
+                                    ->required()
                                     ->hidden(fn(callable $get) => $get('tipo_paciente') != 'Critico')
                                     ->options([
                                         'Neonato' => 'Neonato',
@@ -1520,7 +1520,7 @@ class TrasladoSecundario24Resource extends Resource
                             ->label('Razón de Cierre')
                             ->reactive()
                             ->required(),
-                            Forms\Components\Select::make('razon_fallecido')
+                        Forms\Components\Select::make('razon_fallecido')
                             ->options([
                                 'Antes de llegar a Lugar' => 'Antes de llegar a Lugar',
                                 'Durantes el traslado' => 'Durantes el traslado',
@@ -1575,7 +1575,9 @@ class TrasladoSecundario24Resource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('created_at', '>=', Carbon::now()->subDay());
+            ->where('created_at', '>=', Carbon::now()->subDay())
+            ->where('updated_at', '>=', Carbon::now()->subDay())
+            ;
     }
     public static function getPages(): array
     {

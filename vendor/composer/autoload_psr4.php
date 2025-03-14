@@ -58,6 +58,7 @@ return array(
     'Spatie\\TemporaryDirectory\\' => array($vendorDir . '/spatie/temporary-directory/src'),
     'Spatie\\Sitemap\\' => array($vendorDir . '/spatie/laravel-sitemap/src'),
     'Spatie\\Robots\\' => array($vendorDir . '/spatie/robots-txt/src'),
+    'Spatie\\ResponseCache\\' => array($vendorDir . '/spatie/laravel-responsecache/src'),
     'Spatie\\Permission\\' => array($vendorDir . '/spatie/laravel-permission/src'),
     'Spatie\\MediaLibrary\\' => array($vendorDir . '/spatie/laravel-medialibrary/src'),
     'Spatie\\LaravelSettings\\' => array($vendorDir . '/spatie/laravel-settings/src'),

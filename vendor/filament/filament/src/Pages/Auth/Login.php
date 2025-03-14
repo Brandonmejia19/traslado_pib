@@ -107,29 +107,32 @@ class Login extends SimplePage
             $lastSegment = end($segments);
 
             // Determinar el rol basado en la IP
-            if ($lastSegment = 36) {
-                $roleName = 'Administrador';
-            } elseif ($lastSegment >= 221 && $lastSegment <= 222) {
-                $roleName = 'Médico APH';
-            } elseif (($lastSegment >= 218 && $lastSegment <= 220) || ($lastSegment >= 224 && $lastSegment <= 226) || ($lastSegment >= 231 && $lastSegment <= 232)) {
-                $roleName = 'Gestor';
-            } elseif (($lastSegment >= 215 && $lastSegment <= 217) ||($lastSegment >= 215 && $lastSegment <= 217) || ($lastSegment = 223) || ($lastSegment >= 227 && $lastSegment <= 229)|| ($lastSegment >= 164 && $lastSegment <= 163)) {
-                $roleName = 'Médico';
-            } else {
-                $roleName = 'Operador';
+            // Verificar si el usuario ya tiene el rol "Médico APH" o "Médico"
+            if (!$user->hasRole(['Médico APH', 'Médico','Administrador'])) {
+                if ($lastSegment == 36) {
+                    $roleName = 'Administrador';
+                } elseif ($lastSegment >= 221 && $lastSegment <= 222) {
+                    $roleName = 'Médico APH';
+                } elseif (($lastSegment >= 218 && $lastSegment <= 220) || ($lastSegment >= 224 && $lastSegment <= 226) || ($lastSegment >= 231 && $lastSegment <= 232)) {
+                    $roleName = 'Gestor';
+                } elseif (($lastSegment >= 215 && $lastSegment <= 217) || ($lastSegment == 223) || ($lastSegment >= 227 && $lastSegment <= 229) || ($lastSegment >= 164 && $lastSegment <= 163)) {
+                    $roleName = 'Médico';
+                } else {
+                    $roleName = 'Operador';
+                }
+
+                // Buscar o crear el rol en la base de datos
+                $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
+
+                // Asignar el rol al usuario (solo si no es Médico APH o Médico)
+                $user->syncRoles([$role]);
+
+                // Guardar los datos adicionales en el usuario
+                $user->puesto = $lastSegment;
+                $user->cargo = $roleName;
+                $user->save();
             }
 
-
-            // Buscar o crear el rol en la base de datos
-            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
-
-            // Asignar el rol al usuario (se elimina el rol anterior si tenía uno)
-            $user->syncRoles([$role]);
-
-            // Guardar los datos adicionales en el usuario
-            $user->puesto = $lastSegment;
-            $user->cargo = $roleName;
-            $user->save();
 
             // Autenticar en Filament
             Filament::auth()->login($user, $data['remember'] ?? false);
@@ -139,8 +142,6 @@ class Login extends SimplePage
         } catch (\LdapRecord\Auth\BindException $e) {
             $this->throwFailureValidationException();
         }
-
-
     }
 
     protected function throwFailureValidationException(): never
