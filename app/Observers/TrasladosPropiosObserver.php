@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Actions\Action;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
 use App\Models\User;
-class TrasladosPropios
+class TrasladosPropiosObserver
 {
     /**
      * Handle the TrasladoSecundarioPropios "created" event.
@@ -17,7 +17,7 @@ class TrasladosPropios
     public function created(TrasladoSecundarioPropios $trasladoSecundarioPropios): void
     {
         // OBTENER SOLO USUARIOS CON SESIÓN ACTIVA
-        $recipients = User::role(['Administrador', 'Médico', 'Operador', 'Gestor'])->get();
+        $recipients = User::role(['Administrador', 'Médico', 'Gestor'])->get();
 
         foreach ($recipients as $recipient) {
             Notification::make()

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Observers\TrasladosPropios;
 use App\Models\TrasladoSecundarioPropios;
+use App\Observers\TrasladosPropiosObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        TrasladoSecundarioPropios::observe(TrasladosPropios::class);
+        TrasladoSecundarioPropios::observe(TrasladosPropiosObserver::class);
     }
 }

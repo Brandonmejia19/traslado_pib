@@ -70,65 +70,75 @@ class Login extends SimplePage
         }
 
         $data = $this->form->getState();
-///LOGICA DE AUTENTICACIÓN
-try {
-    $user = \App\Models\User::where('user', $data['user'])->first();
+        ///LOGICA DE AUTENTICACIÓN
+        try {
+            $user = \App\Models\User::where('user', $data['user'])->first();
 
-    if (!$user) {
-        $this->throwFailureValidationException();
-    }
+            if (!$user) {
+                $this->throwFailureValidationException();
+            }
 
-    $connection = new \LdapRecord\Connection([
-        'hosts'    => ['10.10.43.6'],
-        'username' => $data['user'] . '@sem132.local',
-        'password' => $data['password'],
-    ]);
+            $connection = new \LdapRecord\Connection([
+                'hosts' => ['10.10.43.6'],
+                'username' => $data['user'] . '@sem132.local',
+                'password' => $data['password'],
+            ]);
 
-    if (!$connection->auth()->attempt($data['user'] . '@sem132.local', $data['password'])) {
-        $this->throwFailureValidationException();
-    }
+            if (!$connection->auth()->attempt($data['user'] . '@sem132.local', $data['password'])) {
+                $this->throwFailureValidationException();
+            }
 
-    if (
-        ($user instanceof FilamentUser) &&
-        (!$user->canAccessPanel(Filament::getCurrentPanel()))
-    ) {
-        Filament::auth()->logout();
-        $this->throwFailureValidationException();
-    }
+            if (
+                ($user instanceof FilamentUser) &&
+                (!$user->canAccessPanel(Filament::getCurrentPanel()))
+            ) {
+                Filament::auth()->logout();
+                $this->throwFailureValidationException();
+            }
 
-    // Captura la IP del usuario autenticado
-    $ip = Request::ip();
-    if (config('app.behind_cdn')) {
-        $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
-    }
+            // Captura la IP del usuario autenticado
+            $ip = Request::ip();
+            if (config('app.behind_cdn')) {
+                $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+            }
 
-    // Extraer el último segmento de la IP y determinar el rol
-    $segments = explode('.', $ip);
-    $lastSegment = end($segments);
+            // Extraer el último segmento de la IP y determinar el rol
+            $segments = explode('.', $ip);
+            $lastSegment = end($segments);
 
-    // Determinar el rol basado en la IP
-    $roleName = ($lastSegment >= 30 && $lastSegment <= 40) ? 'Administrador' : 'Operador';
-    $roleName = ($lastSegment >= 30 && $lastSegment <= 40) ? 'Administrador' : 'Operador';
+            // Determinar el rol basado en la IP
+            if ($lastSegment = 36) {
+                $roleName = 'Administrador';
+            } elseif ($lastSegment >= 221 && $lastSegment <= 222) {
+                $roleName = 'Médico APH';
+            } elseif (($lastSegment >= 218 && $lastSegment <= 220) || ($lastSegment >= 224 && $lastSegment <= 226) || ($lastSegment >= 231 && $lastSegment <= 232)) {
+                $roleName = 'Gestor';
+            } elseif (($lastSegment >= 215 && $lastSegment <= 217) ||($lastSegment >= 215 && $lastSegment <= 217) || ($lastSegment = 223) || ($lastSegment >= 227 && $lastSegment <= 229)|| ($lastSegment >= 164 && $lastSegment <= 163)) {
+                $roleName = 'Médico';
+            } else {
+                $roleName = 'Operador';
+            }
 
-    // Buscar o crear el rol en la base de datos
-    $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
 
-    // Asignar el rol al usuario (se elimina el rol anterior si tenía uno)
-    $user->syncRoles([$role]);
+            // Buscar o crear el rol en la base de datos
+            $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $roleName]);
 
-    // Guardar los datos adicionales en el usuario
-    $user->puesto = $lastSegment;
-    $user->cargo = $roleName;
-    $user->save();
+            // Asignar el rol al usuario (se elimina el rol anterior si tenía uno)
+            $user->syncRoles([$role]);
 
-    // Autenticar en Filament
-    Filament::auth()->login($user, $data['remember'] ?? false);
-    session()->regenerate();
+            // Guardar los datos adicionales en el usuario
+            $user->puesto = $lastSegment;
+            $user->cargo = $roleName;
+            $user->save();
 
-    return app(LoginResponse::class);
-} catch (\LdapRecord\Auth\BindException $e) {
-    $this->throwFailureValidationException();
-}
+            // Autenticar en Filament
+            Filament::auth()->login($user, $data['remember'] ?? false);
+            session()->regenerate();
+
+            return app(LoginResponse::class);
+        } catch (\LdapRecord\Auth\BindException $e) {
+            $this->throwFailureValidationException();
+        }
 
 
     }
@@ -199,12 +209,12 @@ try {
             ->url(filament()->getRegistrationUrl());
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         return __('filament-panels::pages/auth/login.title');
     }
 
-    public function getHeading(): string | Htmlable
+    public function getHeading(): string|Htmlable
     {
         return __('filament-panels::pages/auth/login.heading');
     }

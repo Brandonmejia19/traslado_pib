@@ -12,7 +12,7 @@ use Filament\Support\Enums\IconPosition;
 
 class ListTrasladoSecundarios extends ListRecords
 {
-   
+
     protected static string $resource = TrasladoSecundarioResource::class;
     protected function getHeaderWidgets(): array
     {

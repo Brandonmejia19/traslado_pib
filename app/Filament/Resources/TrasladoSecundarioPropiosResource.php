@@ -30,8 +30,10 @@ use Filament\Tables\Actions\ActionGroup;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Enums\ActionsPosition;
 use Filament\Support\RawJs;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Support\Facades\Request;
 use Parallax\FilamentComments\Tables\Actions\CommentsAction;
+use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
 
 class TrasladoSecundarioPropiosResource extends Resource
 {
@@ -69,8 +71,19 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->required(),
                                 Forms\Components\TextInput::make('razon_cierre')
                                     ->readOnly()
+                                    ->reactive()
                                     ->prefixicon('heroicon-o-exclamation-circle')
                                     ->label('Razón de Cierre')
+                                    ->required(),
+                                Forms\Components\Select::make('razon_fallecido')
+                                    ->options([
+                                        'Antes de llegar a Lugar' => 'Antes de llegar a Lugar',
+                                        'Durantes el traslado' => 'Durantes el traslado',
+                                        'Durante Entrega' => 'Durante Entrega',
+                                    ])
+                                    ->hidden(condition: fn(callable $get) => $get('razon_cierre') != 'Fallecido')
+                                    ->placeholder('Seleccione una opción')
+                                    ->label('Fallecido')
                                     ->required(),
                                 Forms\Components\TextInput::make('usuario_cierre')
                                     ->label('Doctor de cierre')
@@ -124,7 +137,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->columnSpanFull(),
 
                                 Forms\Components\TextInput::make('tipo_traslado')
-                                    ->label('Nombre del Tipo de Traslado')
+                                    ->label('')
                                     ->readOnly()
                                     ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
                                     ->columnSpanFull()
@@ -178,14 +191,15 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ])->required()
                                     ->placeholder('Opción')
                                     ->columnSpan(1)
+                                    ->live(onBlur: true)
                                     ->reactive()
                                     ->beforeStateDehydrated(function ($state, callable $set) {
                                         // Cambia el color del ColorPicker basado en la prioridad seleccionada
                                         $color = match ($state) {
-                                            '1' => '#de2121', // Rojo para prioridad 1
-                                            '2' => '#dea02c', // Naranja para prioridad 2
-                                            '3' => '#24de1b', // Amarillo para prioridad 3
-                                            '4' => '#29dcf0', // Verde para prioridad 4
+                                            '1' => '#f9473c', // Rojo para prioridad 1
+                                            '2' => '#f9c62f', // Naranja para prioridad 2
+                                            '3' => '#27fb1d', // Amarillo para prioridad 3
+                                            '4' => '#00ffff', // Verde para prioridad 4
                                             default => '#FFF1', // Blanco como valor por defecto
                                         };
                                         $set('color', $color);
@@ -193,17 +207,17 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->afterStateUpdated(function ($state, callable $set) {
                                         // Cambia el color del ColorPicker basado en la prioridad seleccionada
                                         $color = match ($state) {
-                                            '1' => '#de2121', // Rojo para prioridad 1
-                                            '2' => '#dea02c', // Naranja para prioridad 2
-                                            '3' => '#24de1b', // Amarillo para prioridad 3
-                                            '4' => '#29dcf0', // Verde para prioridad 4
+                                            '1' => '#f9473c', // Rojo para prioridad 1
+                                            '2' => '#f9c62f', // Naranja para prioridad 2
+                                            '3' => '#27fb1d', // Amarillo para prioridad 3
+                                            '4' => '#00ffff', // Verde para prioridad 4
                                             default => '#FFF1', // Blanco como valor por defecto
                                         };
                                         $set('color', $color);
                                     }),
                                 Forms\Components\ColorPicker::make('color')
                                     ->label('.')
-                                    ->live()
+                                    ->live(onBlur: true)
                                     ->columnSpan(1)->extraAttributes(['style' => 'pointer-events: none; width: 0px; height: 0px; border-radius: 0px;']),
                                 Forms\Components\TextInput::make('jvpe_medico_entrega')
                                     ->tel()->columnspan(2)
@@ -288,6 +302,11 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->prefixicon('healthicons-o-hospitalized')
                                     ->placeholder('Número de Cama')
                                     ->label('Número de Cama'),
+                                Forms\Components\Textarea::make('observaciones_origen')
+                                    ->autosize()
+                                    ->columnspan(1)
+                                    ->placeholder('Observaciones')
+                                    ->label('Observaciones'),
                                 Forms\Components\TextInput::make('origen_institucion')
                                     ->label('Otro Destino / Domicilio')->columnspan(2)
                                     ->placeholder('Nombre de la Institución / Dirección')
@@ -366,7 +385,11 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->placeholder('Número de Cama')
                                     ->label('Número de Cama')
                                     ->maxLength(3),
-
+                                Forms\Components\Textarea::make('observaciones_destino')
+                                    ->autosize()
+                                    ->columnspan(1)
+                                    ->placeholder('Observaciones')
+                                    ->label('Observaciones'),
                                 Forms\Components\TextInput::make('nombre_medico_recibe')
                                     ->placeholder('Nombre del Médico que Recibe')
                                     ->label('Nombre médico o persona receptora')->columnspan(2)
@@ -439,6 +462,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->schema([
                                         Forms\Components\Select::make('tipo_ambulancia')
                                             ->label('Tipo Unidad')
+                                            ->disabled(auth()->user()->cargo != 'Gestor')
                                             ->prefixicon('healthicons-o-ambulance')
                                             ->options([
                                                 'A' => 'A',
@@ -450,10 +474,23 @@ class TrasladoSecundarioPropiosResource extends Resource
                                             ->placeholder('Unidad')
                                             ->label('Unidad')
                                             ->options(Ambulancias::query()->pluck('unidad', 'unidad'))
-                                            ->searchable()
-                                            ->disabled(auth()->user()->cargo === 'Operador')
+                                            ->searchable(auth()->user()->cargo != 'Gestor')
+                                            ->disabled(auth()->user()->cargo != 'Gestor')
                                             ->columnspan(1)
                                             ->prefixicon('healthicons-o-ambulance'),
+                                        Forms\Components\TextInput::make('gestor_numero')
+                                            ->placeholder('Número del Operador')
+                                            ->columnspan(1)
+                                            ->label('Puesto Gestor')
+                                            ->readOnly()
+                                            ->prefixicon('healthicons-o-call-centre'),
+                                        Forms\Components\TextInput::make('gestor_nombre')
+                                            ->prefixicon('healthicons-o-call-centre')
+                                            ->placeholder('Gestor Asignado')
+                                            ->label('Gestor Asignado')
+                                            ->readOnly()
+                                            ->columnspan(1)
+                                            ->maxLength(255),
                                     ])->columnspan('full'),
                             ]),
                         Forms\Components\Fieldset::make('DATOS DE PACIENTE')
@@ -528,6 +565,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->inline()
                                     ->required(),
                                 Forms\Components\ToggleButtons::make('tipo_critico')
+                                    ->required()
                                     ->hidden(fn(callable $get) => $get('tipo_paciente') != 'Critico')
                                     ->options([
                                         'Neonato' => 'Neonato',
@@ -657,11 +695,9 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->collapseAllAction(
                                         fn(Action $action) => $action->label('Esconder todo'),
                                     )
-                                    ->deletable(true)
+                                    ->deletable(false)
                                     ->reorderable(false)
                                     ->schema([
-
-                                        ///CAMBIAR LOGICA A QUE AL MENOS UNO ESTE LLENO DESACTIVAR LSO DEMAS
                                         Forms\Components\TextInput::make('presion_arterial')
                                             ->prefixicon('healthicons-o-blood-pressure')
                                             ->placeholder('120/80')
@@ -752,6 +788,7 @@ class TrasladoSecundarioPropiosResource extends Resource
 
                             ]),
                         Forms\Components\Fieldset::make('PARAMETROS DE VENTILACIÓN')
+                            ->hidden(fn(callable $get) => $get('tipo_paciente') != 'Critico')
                             ->columns(5)
                             ->schema([
                                 Forms\Components\ToggleButtons::make('asistencia_ventilatoria')
@@ -829,19 +866,54 @@ class TrasladoSecundarioPropiosResource extends Resource
 
                         Forms\Components\Fieldset::make('NOTAS DE SEGUIMIENTO')
                             ->schema([
-                                Forms\Components\TextArea::make('notas_seguimiento')
-                                    ->label('Notas')
-                                    ->maxLength(255)
-                                    ->placeholder('Notas de Seguimiento')
+                                Forms\Components\Repeater::make('notas_seguimiento')
+                                    ->label('Notas de Seguimiento')
+                                    ->columns(4)
+                                    ->addActionLabel('Agregar nueva Nota')
+                                    ->deletable(false)
+                                    ->reorderable(false)
+                                    ->schema([
+                                        Forms\Components\TextArea::make('nota')
+                                            ->label('Nota')
+                                            ->maxLength(255)
+                                            ->readOnly(fn($state) => !empty($state))
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('usuario')
+                                            ->label('Usuario')
+                                            ->default(auth()->user()->name)
+                                            ->readOnly() // No editable, solo informativo
+                                            ->columnSpan(1),
+                                        Forms\Components\TextInput::make('operador_numero')
+                                            ->label('PP')
+                                            ->default(function () {
+                                                $ip = Request::ip();
+
+                                                if (config('app.behind_cdn')) {
+                                                    $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+                                                }
+
+
+                                                $segments = explode('.', $ip);
+                                                $lastDigits = array_slice($segments, -1);
+
+                                                return implode('.', $lastDigits);
+                                            })->readOnly() // No editable, solo informativo
+                                            ->columnSpan(1),
+                                        Forms\Components\DateTimePicker::make('fecha')
+                                            ->label('Fecha')
+                                            ->default(now()) // Se asigna la fecha y hora actual
+                                            ->readOnly() // No editable, solo informativo
+                                            ->columnSpan(1),
+                                    ])
+                                    ->collapsible() // Para que las entradas no ocupen tanto espacio visualmente
+                                    ->addActionLabel('Agregar Nota') // Personaliza el botón de agregar
                                     ->columnSpanFull(),
                                 Forms\Components\Fieldset::make('Información de Usuario')
                                     ->columns(4)
                                     ->schema([
-
                                         Forms\Components\TextInput::make('operador_numero')
                                             ->placeholder('Número del Operador')
                                             ->columnspan(1)
-                                            ->numeric()
                                             ->label('Puesto')
                                             ->default(function () {
                                                 $ip = Request::ip();
@@ -873,6 +945,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ])
             ]);
     }
+
 
 
 
@@ -917,6 +990,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->icon('healthicons-o-clinical-f')
                     ->default('---')
                     ->sortable()
+                    ->limit(15)
                     ->alignment(Alignment::Center)
                     ->label('Diagnóstico')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -929,6 +1003,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('origen_traslado')
+                    ->limit(25)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
@@ -936,6 +1011,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('destino_traslado')
+                    ->limit(25)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
@@ -943,6 +1019,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('nombres_paciente')
+                    ->limit(15)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
@@ -950,6 +1027,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('apellidos_paciente')
+                    ->limit(15)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
 
@@ -1002,6 +1080,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
+
                     ->sortable()->alignment(Alignment::Center)
 
                     ->label('Fecha de Creación')
@@ -1391,11 +1470,38 @@ class TrasladoSecundarioPropiosResource extends Resource
 
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\SelectFilter::make('color')
+                    ->label('Prioridad')
+                    ->options([
+                        '#de2121' => '1', // Rojo para prioridad 1
+                        '#dea02c' => '2', // Naranja para prioridad 2
+                        '#24de1b' => '3', // Amarillo para prioridad 3
+                        '#29dcf0' => '4',
+                    ]),
+                Tables\Filters\SelectFilter::make('tipo_paciente')
+                    ->label('Estado Paciente')
+                    ->options([
+                        'Critico' => 'Critico',
+                        'Estable' => 'Estable',
+                    ]),
+                Tables\Filters\SelectFilter::make('programado')
+                    ->label('Traslado Programado')
+                    ->options([
+                        'SI' => 'SI',
+                        'NO' => 'NO',
+                    ]),
+
+            ], layout: Tables\Enums\FiltersLayout::Modal)
+            ->defaultSort('created_at', 'desc')
             ->paginated([10, 25, 50])
             ->actions([
-               // CommentsAction::make()->icon(icon: 'heroicon-o-chat-bubble-left-right')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton(),
+                // CommentsAction::make()->icon(icon: 'heroicon-o-chat-bubble-left-right')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton(),
+                Tables\Actions\Action::make('descargarPDF')->hidden(auth()->user()->cargo === 'Operador' || auth()->user()->cargo === 'Gestor')
+                    ->label('Descargar PDF')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->iconButton()
+                    ->url(fn(TrasladoSecundarioPropios $record) => route('pdf.traslado', $record->id))
+                    ->openUrlInNewTab(),
                 Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')
@@ -1423,10 +1529,23 @@ class TrasladoSecundarioPropiosResource extends Resource
                                 'Resuelto' => 'Resuelto',
                                 'No Resuelto' => 'No Resuelto',
                                 'Cancelado' => 'Cancelado',
+                                'Fallecido' => 'Fallecido',
+                                'Retorno' => 'Retorno',
                                 'Otro' => 'Otro',
                             ])
+                            ->reactive()
                             ->placeholder('Seleccione una opción')
                             ->label('Razón de Cierre')
+                            ->required(),
+                        Forms\Components\Select::make('razon_fallecido')
+                            ->options([
+                                'Antes de llegar a Lugar' => 'Antes de llegar a Lugar',
+                                'Durantes el traslado' => 'Durantes el traslado',
+                                'Durante Entrega' => 'Durante Entrega',
+                            ])
+                            ->hidden(condition: fn(callable $get) => $get('razon_cierre') != 'Fallecido')
+                            ->placeholder('Seleccione una opción')
+                            ->label('Fallecido')
                             ->required(),
                         Forms\Components\TextInput::make('usuario_cierre')
                             ->label('Usuario')
@@ -1439,6 +1558,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                             'estado' => 'Finalizado',
                             'justificacion_cierre' => $data['justificacion_cierre'],
                             'razon_cierre' => $data['razon_cierre'],
+                            'razon_fallecido' => $data['razon_fallecido'],
                             'usuario_cierre' => Auth::user()->name, // Usuario autenticado
                         ]);
                         Notification::make()
@@ -1455,15 +1575,9 @@ class TrasladoSecundarioPropiosResource extends Resource
             ], position: ActionsPosition::BeforeCells)
             ->defaultGroup('estado')
             ->bulkActions([
-
             ]);
     }
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
@@ -1475,7 +1589,7 @@ class TrasladoSecundarioPropiosResource extends Resource
         return [
             'index' => Pages\ListTrasladoSecundarioPropios::route('/'),
             //  'create' => Pages\CreateTrasladoSecundarioPropios::route('/create'),
-            //'edit' => Pages\EditTrasladoSecundarioPropios::route('/{record}/edit'),
+            //  'edit' => Pages\EditTrasladoSecundarioPropios::route('/{record}/edit'),
         ];
     }
 }

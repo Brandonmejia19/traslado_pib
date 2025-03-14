@@ -12,7 +12,7 @@ use Parallax\FilamentComments\Models\Traits\HasFilamentComments;
 
 class TrasladoSecundario extends Model
 {
-    use LogsActivity,HasFilamentComments;
+    use LogsActivity, HasFilamentComments;
 
     protected $table = 'traslado_secundarios';
     public function getActivitylogOptions(): LogOptions
@@ -32,13 +32,17 @@ class TrasladoSecundario extends Model
 
                 'nombre_medico_solicitante',
                 'telefono_medico_solicitante',
-                'jvpe_medico_entrega',
 
                 'destino_traslado',
                 'destino_institucion',
                 'origen_traslado',
                 'origen_institucion',
-
+                'servicio_origen',
+                'numero_cama_origen',
+                'servicio_destino',
+                'numero_cama_destino',
+                'observaciones_destino',
+                'observaciones_origen',
                 'nombre_medico_recibe',
                 'telefono_medico_recibe',
 
@@ -60,6 +64,7 @@ class TrasladoSecundario extends Model
                 'signos_vitales',//json
 
                 'jvpe_medico_recibe',
+                'jvpe_medico_entrega',
 
                 'dilatacion',
                 'borramiento',
@@ -76,10 +81,8 @@ class TrasladoSecundario extends Model
 
                 'asistencia_ventilatoria',
                 'bombas_infusion',
-                'servicio_origen',
-                'numero_cama_origen',
-                'servicio_destino',
-                'numero_cama_destino',
+                'servicio',
+                //    'numero_cama',
 
                 ///NUEVOS DATOS
                 'prioridad',
@@ -96,6 +99,7 @@ class TrasladoSecundario extends Model
                 'relacion_ie',
                 'fr',
                 'peep',
+                'tipo_unidad_sugerida',
                 'trigger',
 
                 'justificacion_cierre',
@@ -104,10 +108,13 @@ class TrasladoSecundario extends Model
                 'notas_seguimiento',
                 'estado',
                 'correlativo',
-                'formula_obstetrica' => 'array',
-                'signos_vitales' => 'array',
-
-                'tipo_unidad_sugerida',
+                'notas_seguimiento',
+                'user_id',
+                'gestor_numero',
+                'gestor_nombre',
+                'observaciones_origen',
+                'observaciones_destino',
+                'razon_fallecido'
             ]);
     }
     protected $fillable = [
@@ -133,7 +140,8 @@ class TrasladoSecundario extends Model
         'numero_cama_origen',
         'servicio_destino',
         'numero_cama_destino',
-
+        'observaciones_destino',
+        'observaciones_origen',
         'nombre_medico_recibe',
         'telefono_medico_recibe',
 
@@ -173,7 +181,7 @@ class TrasladoSecundario extends Model
         'asistencia_ventilatoria',
         'bombas_infusion',
         'servicio',
-    //    'numero_cama',
+        //    'numero_cama',
 
         ///NUEVOS DATOS
         'prioridad',
@@ -190,6 +198,7 @@ class TrasladoSecundario extends Model
         'relacion_ie',
         'fr',
         'peep',
+        'tipo_unidad_sugerida',
         'trigger',
 
         'justificacion_cierre',
@@ -198,11 +207,18 @@ class TrasladoSecundario extends Model
         'notas_seguimiento',
         'estado',
         'correlativo',
+        'notas_seguimiento',
         'user_id',
+        'gestor_numero',
+        'gestor_nombre',
+        'observaciones_origen',
+        'observaciones_destino',
+        'razon_fallecido'
     ];
     protected $casts = [
         'formula_obstetrica' => 'array',
         'signos_vitales' => 'array',
+        'notas_seguimiento' => 'array',
     ];
     protected static function boot()
     {

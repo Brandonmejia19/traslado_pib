@@ -7,7 +7,7 @@ use EightyNine\FilamentAdvancedWidget\AdvancedStatsOverviewWidget\Stat;
 use Carbon\Carbon;
 use App\Models\TrasladoSecundario;
 
-class TrasladosSecundarios24 extends BaseWidget
+class TrasladosSecundarios24HH extends BaseWidget
 {
     protected static ?string $pollingInterval = '10s';
     protected static bool $isLazy = false;
@@ -15,7 +15,7 @@ class TrasladosSecundarios24 extends BaseWidget
     {
         Carbon::setLocale('es');
         $startDate = Carbon::now()->startOfDay()->toDateString();
-        $endDate = Carbon::now()->startOfDay()->toDateString();
+        $endDate = Carbon::now();
         $venticuatrostart = Carbon::now()->subDay();
 
         $totaldia = TrasladoSecundario::query()
@@ -55,14 +55,14 @@ class TrasladosSecundarios24 extends BaseWidget
                 ->chartColor('danger'),
             Stat::make('Traslados pendientes: ', $totalpendientes)
                 ->icon('healthicons-o-critical-care')
-                ->iconBackgroundColor('danger')
-                ->description('Traslados Programados/Pendientes de asignacion de recurso')
+                ->iconBackgroundColor('warning')
+                ->description('Traslados /Pendientes de asignacion de recurso')
                 ->descriptionIcon('healthicons-o-critical-care')
                 ->progress($totalpendientes)
-                ->iconColor('danger')
-                ->progressBarColor('danger')
+                ->iconColor('warning')
+                ->progressBarColor('warning')
                 ->iconPosition('start')
-                ->chartColor('danger'),
+                ->chartColor('warning'),
             Stat::make('Traslados Activos', $totalactivos)->progress($totalactivos)
                 ->progressBarColor('primary')
                 ->description('Traslados En curso')

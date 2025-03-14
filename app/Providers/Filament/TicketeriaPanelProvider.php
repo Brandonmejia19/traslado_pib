@@ -3,6 +3,9 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\TrasladoSecundarioResource24;
+use App\Filament\Ticketeria\Widgets\CasosRecientes;
+use App\Filament\Ticketeria\Widgets\CasosRecientes2;
+use App\Filament\Widgets\CasosRecientes24;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -36,6 +39,10 @@ use Swis\Filament\Backgrounds\ImageProviders\MyImages;
 use Vormkracht10\TwoFactorAuth\TwoFactorAuthPlugin;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use App\Filament\Widgets\CasosDía;
+use App\Filament\Widgets\ControlMedicos;
+use App\Filament\Widgets\EstadisticasDia;
+use App\Filament\Widgets\GestoresControl;
 use Vormkracht10\TwoFactorAuth\Http\Livewire\Auth\Login;
 use Rmsramos\Activitylog\ActivitylogPlugin;
 use Tapp\FilamentAuthenticationLog\FilamentAuthenticationLogPlugin;
@@ -49,7 +56,7 @@ class TicketeriaPanelProvider extends PanelProvider
         return $panel
             ->id('ticketeria')
             ->path('ticketeria')
-          //  ->darkMode(false)
+            //  ->darkMode(false)
             ->sidebarWidth('15rem')
             ->default()
             ->sidebarCollapsibleOnDesktop()
@@ -67,16 +74,17 @@ class TicketeriaPanelProvider extends PanelProvider
                 'orange' => Color::Orange,
                 'sidebar' => Color::hex('#fff'),
             ])
+            ->breadcrumbs(false)
             ->login()
             ->databaseNotifications()
             ->brandLogo(asset('images/logo222.svg'))
             // Configura el logo para el modo oscuro
             ->darkModeBrandLogo(asset('images/logocheques.svg'))
-            
+
             ->favicon(asset('images/logocheques.svg'))
             ->plugins([
                 EasyFooterPlugin::make(),
-             //   FilamentErrorPagesPlugin::make(),
+                //   FilamentErrorPagesPlugin::make(),
                 FilamentBackgroundsPlugin::make()->imageProvider(
                     MyImages::make()
                         ->directory('images/backgrounds')
@@ -101,14 +109,20 @@ class TicketeriaPanelProvider extends PanelProvider
             ])
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             ->resources([
-                TrasladoSecundarioResource::class,
-                TrasladoSecundario24Resource::class,
                 TrasladoSecundarioPropiosResource::class,
+                TrasladoSecundario24Resource::class,
                 TrasladoSecundarioGestoresResource::class,
-                 ])
+                TrasladoSecundarioResource::class,
+            ])
             ->discoverWidgets(in: app_path('Filament/Ticketeria/Widgets'), for: 'App\\Filament\\Ticketeria\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                EstadisticasDia::class,
+                CasosDía::class,
+                CasosRecientes24::class,
+                ControlMedicos::class,
+                GestoresControl::class,
+                // Widgets\AccountWidget::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,
