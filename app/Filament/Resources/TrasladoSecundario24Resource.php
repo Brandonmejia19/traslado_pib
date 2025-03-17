@@ -1575,10 +1575,18 @@ class TrasladoSecundario24Resource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('created_at', '>=', Carbon::now()->subDay())
-            ->where('updated_at', '>=', Carbon::now()->subDay())
-            ;
+            ->where(function ($query) {
+                // Mostrar registros "Finalizados" creados o actualizados en las últimas 24 horas
+                $query->where('estado', 'Finalizado')
+                      ->where(function ($subquery) {
+                          $subquery->where('created_at', '>=', Carbon::now()->subDay())
+                                   ->orWhere('updated_at', '>=', Carbon::now()->subDay());
+                      });
+            })
+            ->orWhere('estado', 'En curso') // Siempre mostrar los "En curso"
+            ->orderByDesc('created_at'); // Ordenar de más reciente a más antiguo
     }
+
     public static function getPages(): array
     {
         return [

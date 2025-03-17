@@ -16,20 +16,30 @@ class ListTrasladoSecundario24s extends ListRecords
     public function getTabs(): array
     {
         return [
+            // 🔸 Tab de Casos "En Curso" (Siempre visibles sin importar fecha)
             'En Curso' => Tab::make()
-                ->icon('heroicon-s-x-circle')
-                ->badgeColor('warning')
                 ->icon('heroicon-s-information-circle')
+                ->badgeColor('warning')
                 ->iconPosition(IconPosition::After)
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('estado', 'En curso')),
+                ->modifyQueryUsing(fn(Builder $query) =>
+                    $query->where('estado', 'En curso')
+                ),
 
+            // ✅ Tab de Casos "Finalizados" en las últimas 24h
             'Finalizado' => Tab::make()
-                ->icon('heroicon-s-x-circle')
+                ->icon('heroicon-s-check-circle')
                 ->badgeColor('success')
                 ->iconPosition(IconPosition::After)
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('estado', 'Finalizado')),
+                ->modifyQueryUsing(fn(Builder $query) =>
+                    $query->where('estado', 'Finalizado')
+                          ->where(function ($subquery) {
+                              $subquery->where('created_at', '>=', Carbon::now()->subDay())
+                                       ->orWhere('updated_at', '>=', Carbon::now()->subDay());
+                          })
+                ),
         ];
     }
+
     protected function getHeaderWidgets(): array
     {
         return [
