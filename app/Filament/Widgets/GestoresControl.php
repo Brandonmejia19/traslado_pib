@@ -26,15 +26,13 @@ class GestoresControl extends AdvancedBarChartWidget
 
     protected function getData(): array
     {
-        // Definir el rango de las últimas 24 horas
         $now = Carbon::now();
         $start = $now->copy()->subDay();
 
-        // Consulta: Agrupar por usuario_cierre y contar los casos que estén finalizados
         $query = TrasladoSecundario::query()
             ->select(DB::raw("COALESCE(gestor_nombre, 'Sin asignar') as gestor_nombre"), DB::raw('count(*) as total'))
-            ->where('estado', 'Finalizado')
-            ->orWhere('estado', 'En curso')
+            ->where('estado', 'Finalizado' || 'En curso')
+           // ->where('estado', 'En curso')
             ->where(function ($q) use ($start, $now) {
                 $q->whereBetween('created_at', [$start, $now])
                     ->orWhereBetween('updated_at', [$start, $now]);
