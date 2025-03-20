@@ -879,10 +879,14 @@ class TrasladoSecundario24Resource extends Resource
                                                 }
 
 
-                                                $segments = explode('.', $ip);
-                                                $lastDigits = array_slice($segments, -1);
+                                               $segments = explode('.', $ip); // Divide la IP en segmentos
 
-                                                return implode('.', $lastDigits);
+                                                $lastSegment = end($segments); // Obtiene el último segmento
+
+                                                // Obtiene los últimos 2 dígitos del segmento
+                                                $lastTwoDigits = substr($lastSegment, -2);
+
+                                                return $lastTwoDigits;
                                             })->readOnly() // No editable, solo informativo
                                             ->columnSpan(1),
                                         Forms\Components\DateTimePicker::make('fecha')
@@ -910,10 +914,14 @@ class TrasladoSecundario24Resource extends Resource
                                                 }
 
 
-                                                $segments = explode('.', $ip);
-                                                $lastDigits = array_slice($segments, -1);
+                                               $segments = explode('.', $ip); // Divide la IP en segmentos
 
-                                                return implode('.', $lastDigits);
+                                                $lastSegment = end($segments); // Obtiene el último segmento
+
+                                                // Obtiene los últimos 2 dígitos del segmento
+                                                $lastTwoDigits = substr($lastSegment, -2);
+
+                                                return $lastTwoDigits;
                                             })
                                             ->readOnly()
                                             ->prefixicon('healthicons-o-call-centre')

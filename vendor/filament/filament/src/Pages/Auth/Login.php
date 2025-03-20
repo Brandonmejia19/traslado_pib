@@ -105,7 +105,10 @@ class Login extends SimplePage
             // Extraer el último segmento de la IP y determinar el rol
             $segments = explode('.', $ip);
             $lastSegment = end($segments);
+            $lastSegment = end($segments); // Obtiene el último segmento
 
+            // Obtiene los últimos 2 dígitos del segmento
+            $lastTwoDigits = substr($lastSegment, -2);
             // Determinar el rol basado en la IP
             // Verificar si el usuario ya tiene el rol "Médico APH" o "Médico"
             if (!$user->hasRole(['Médico APH', 'Médico','Administrador'])) {
@@ -128,7 +131,7 @@ class Login extends SimplePage
                 $user->syncRoles([$role]);
 
                 // Guardar los datos adicionales en el usuario
-                $user->puesto = $lastSegment;
+                $user->puesto = $lastTwoDigits;
                 $user->cargo = $roleName;
                 $user->save();
             }
