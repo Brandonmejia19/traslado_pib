@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\TrasladoSecundarioExporter;
 use App\Filament\Resources\TrasladoSecundario24Resource\Pages;
 use App\Filament\Resources\TrasladoSecundario24Resource\RelationManagers;
 use App\Filament\Resources\TrasladoSecundario24Resource\Widgets\TrasladosSecundarios24;
@@ -31,6 +32,7 @@ use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Support\Facades\Request;
 use Parallax\FilamentComments\Tables\Actions\CommentsAction;
 use Livewire\Livewire;
+use Filament\Tables\Actions\ExportAction;
 class TrasladoSecundario24Resource extends Resource
 {
     protected static ?string $model = TrasladoSecundario::class;
@@ -76,7 +78,12 @@ class TrasladoSecundario24Resource extends Resource
                                     ->label('Doctor de cierre')
                                     ->prefixicon('healthicons-o-doctor')
                                     ->default(Auth::user()->name)
-                                    ->readOnly(), // Este campo se muestra solo para información, no editable
+                                    ->readOnly(),
+                                Forms\Components\TextInput::make('doctor_numero')
+                                    ->readOnly()
+                                    ->prefixicon('heroicon-o-exclamation-circle')
+                                    ->label('PP')
+                                    ->required(),
                             ])
                     ])->columns(3),
                 Forms\Components\Section::make('Información')
@@ -861,7 +868,6 @@ class TrasladoSecundario24Resource extends Resource
                                     ->schema([
                                         Forms\Components\TextArea::make('nota')
                                             ->label('Nota')
-                                            ->maxLength(255)
                                             ->readOnly(fn($state) => !empty($state))
                                             ->columnSpanFull(),
                                         Forms\Components\TextInput::make('usuario')
@@ -879,7 +885,7 @@ class TrasladoSecundario24Resource extends Resource
                                                 }
 
 
-                                               $segments = explode('.', $ip); // Divide la IP en segmentos
+                                                $segments = explode('.', $ip); // Divide la IP en segmentos
 
                                                 $lastSegment = end($segments); // Obtiene el último segmento
 
@@ -914,7 +920,7 @@ class TrasladoSecundario24Resource extends Resource
                                                 }
 
 
-                                               $segments = explode('.', $ip); // Divide la IP en segmentos
+                                                $segments = explode('.', $ip); // Divide la IP en segmentos
 
                                                 $lastSegment = end($segments); // Obtiene el último segmento
 
@@ -1541,7 +1547,27 @@ class TrasladoSecundario24Resource extends Resource
                         Forms\Components\TextInput::make('usuario_cierre')
                             ->label('Usuario')
                             ->default(Auth::user()->name)
-                            ->disabled(), // Solo para información, no editable
+                            ->disabled(),
+                        Forms\Components\TextInput::make('doctor_numero')
+                            ->label('PP')
+                            ->default(function () {
+                                $ip = Request::ip();
+
+                                if (config('app.behind_cdn')) {
+                                    $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+                                }
+
+
+                                $segments = explode('.', $ip); // Divide la IP en segmentos
+
+                                $lastSegment = end($segments); // Obtiene el último segmento
+
+                                // Obtiene los últimos 2 dígitos del segmento
+                                $lastTwoDigits = substr($lastSegment, -2);
+
+                                return $lastTwoDigits;
+                            })->readOnly() // No editable, solo informativo
+                            ->columnSpan(1), // Solo para información, no editable
                     ])
                     ->action(function (array $data, TrasladoSecundario $record) {
                         // Actualizar el registro con los datos de Tr
@@ -1549,6 +1575,7 @@ class TrasladoSecundario24Resource extends Resource
                             'estado' => 'Finalizado',
                             'justificacion_cierre' => $data['justificacion_cierre'],
                             'razon_cierre' => $data['razon_cierre'],
+                            'doctor_numero' => $data['doctor_numero'],
                             'usuario_cierre' => Auth::user()->name, // Usuario autenticado
                         ]);
                         Notification::make()
@@ -1559,18 +1586,33 @@ class TrasladoSecundario24Resource extends Resource
                             ->send();
 
                     }),
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()
+                    ->modalIcon('healthicons-o-mobile-clinic')
+                    ->modalAlignment(Alignment::Center)
+                    ->modalHeading('Traslados Secundarios - Vista')
+                    ->icon('heroicon-o-eye')->color('warning'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')
+                    ->modalIcon('healthicons-o-mobile-clinic')
+                    ->modalAlignment(Alignment::Center)
+                    ->modalHeading('Traslados Secundarios - Edición')
                     ->hidden(
                         fn(TrasladoSecundario $record) =>
                         $record->estado != 'En curso' ||
-                        !in_array(auth()->user()->cargo, ['Médico', 'Administrador'])
+                        !in_array(auth()->user()->cargo, ['Médico APH', 'Administrador'])
                     ),
             ], position: ActionsPosition::BeforeCells)
 
-
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(TrasladoSecundarioExporter::class)
+                    ->hidden(!in_array(auth()->user()->cargo, ['Médico APH', 'Administrador']))
+                    ->label('Exportar a Excel')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+            ])
             ->bulkActions([
+
             ]);
     }
 
@@ -1584,16 +1626,18 @@ class TrasladoSecundario24Resource extends Resource
     {
         return parent::getEloquentQuery()
             ->where(function ($query) {
-                // Mostrar registros "Finalizados" creados o actualizados en las últimas 24 horas
-                $query->where('estado', 'Finalizado')
-                      ->where(function ($subquery) {
-                          $subquery->where('created_at', '>=', Carbon::now()->subDay())
-                                   ->orWhere('updated_at', '>=', Carbon::now()->subDay());
-                      });
+                $query->where('estado', 'En curso')
+                    ->orWhere(function ($query) {
+                        $query->where('estado', 'Finalizado')
+                            ->where(function ($subquery) {
+                                $subquery->where('created_at', '>=', Carbon::now()->subDay())
+                                    ->orWhere('updated_at', '>=', Carbon::now()->subDay());
+                            });
+                    });
             })
-            ->orWhere('estado', 'En curso') // Siempre mostrar los "En curso"
-            ->orderByDesc('created_at'); // Ordenar de más reciente a más antiguo
+            ->orderByDesc('created_at');
     }
+
 
     public static function getPages(): array
     {

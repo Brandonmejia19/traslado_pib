@@ -22,6 +22,7 @@ class TrasladoSecundarioPropios extends Model
         return LogOptions::defaults()
             ->logOnly([
                 'asunto_traslado',
+                'doctor_numero',
                 'fecha',
                 'hora',
                 'ambulancia',
@@ -130,6 +131,7 @@ class TrasladoSecundarioPropios extends Model
         'numero_llamada',
         'tipo_traslado_id',
         'tipo_traslado',
+        'doctor_numero',
 
         'nombre_medico_solicitante',
         'telefono_medico_solicitante',

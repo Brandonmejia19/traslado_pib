@@ -22,6 +22,7 @@ class TrasladoSecundarioGestores extends Model
                 'fecha',
                 'hora',
                 'ambulancia',
+                'doctor_numero',
                 'tipo_ambulancia',
                 'operador_nombre',
                 'operador_numero',
@@ -127,6 +128,7 @@ class TrasladoSecundarioGestores extends Model
         'numero_llamada',
         'tipo_traslado_id',
         'tipo_traslado',
+        'doctor_numero',
 
         'nombre_medico_solicitante',
         'telefono_medico_solicitante',

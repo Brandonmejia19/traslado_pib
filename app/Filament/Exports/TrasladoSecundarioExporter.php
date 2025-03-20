@@ -2,14 +2,14 @@
 
 namespace App\Filament\Exports;
 
-use App\Models\TrasladoSecundarioHistorico;
+use App\Models\TrasladoSecundario;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 
-class TrasladoSecundarioHistoricoExporter extends Exporter
+class TrasladoSecundarioExporter extends Exporter
 {
-    protected static ?string $model = TrasladoSecundarioHistorico::class;
+    protected static ?string $model = TrasladoSecundario::class;
 
     public static function getColumns(): array
     {

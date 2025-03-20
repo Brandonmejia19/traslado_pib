@@ -81,6 +81,11 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->prefixicon('healthicons-o-doctor')
                                     ->default(Auth::user()->name)
                                     ->readOnly(),
+                                Forms\Components\TextInput::make('doctor_numero')
+                                    ->readOnly()
+                                    ->prefixicon('heroicon-o-exclamation-circle')
+                                    ->label('PP')
+                                    ->required(),
                             ])
                     ])->columns(3),
                 Forms\Components\Section::make('Información')
@@ -163,7 +168,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->columnSpan(2)
                                     ->placeholder('0000-0000')
                                     ->maxLength(255),
-                                    Forms\Components\Select::make('prioridad')
+                                Forms\Components\Select::make('prioridad')
                                     ->prefixIcon('heroicon-o-exclamation-triangle')
                                     ->options([
                                         '1' => '1',
@@ -473,7 +478,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                                 'C' => 'C',
                                                 'M' => 'M',
                                             ])->columnspan(1),
-                                            Forms\Components\Select::make('ambulancia')
+                                        Forms\Components\Select::make('ambulancia')
                                             ->placeholder('Unidad')
                                             ->label('Unidad')
                                             ->reactive()
@@ -499,7 +504,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                             ->disabled(auth()->user()->cargo === 'Operador')
                                             ->columnspan(1)
                                             ->prefixicon('healthicons-o-ambulance'),
-                                            Forms\Components\TextInput::make('gestor_numero')
+                                        Forms\Components\TextInput::make('gestor_numero')
                                             ->placeholder('Número del Operador')
                                             ->columnspan(1)
                                             ->label('Puesto Gestor')
@@ -928,7 +933,6 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->schema([
                                         Forms\Components\TextArea::make('nota')
                                             ->label('Nota')
-                                            ->maxLength(255)
                                             ->readOnly(fn($state) => !empty($state))
                                             ->columnSpanFull(),
                                         Forms\Components\TextInput::make('usuario')
@@ -946,7 +950,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                                 }
 
 
-                                               $segments = explode('.', $ip); // Divide la IP en segmentos
+                                                $segments = explode('.', $ip); // Divide la IP en segmentos
 
                                                 $lastSegment = end($segments); // Obtiene el último segmento
 
@@ -981,7 +985,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                                 }
 
 
-                                               $segments = explode('.', $ip); // Divide la IP en segmentos
+                                                $segments = explode('.', $ip); // Divide la IP en segmentos
 
                                                 $lastSegment = end($segments); // Obtiene el último segmento
 
@@ -1012,523 +1016,523 @@ class TrasladoSecundarioGestoresResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-        ->columns([
-            Tables\Columns\TextColumn::make('tipo_paciente')
-                ->label('Estado P.')
-                ->default('---')
-                ->sortable()
-                ->badge()
-                ->color(function ($record) {
-                    $tipo_paciente = $record->tipo_paciente;
-                    if ($tipo_paciente === "Critico") {
-                        return 'danger';
-                    }
-                    if ($tipo_paciente === "Estable") {
-                        return 'success';
-                    }
-                })
-                ->icon(function ($record) {
-                    $tipo_paciente = $record->tipo_paciente;
-                    if ($tipo_paciente === "Critico") {
-                        return 'healthicons-o-bandaged';
-                    }
-                    if ($tipo_paciente === "Estable") {
-                        return 'healthicons-o-happy';
-                    }
-                })
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('correlativo')
-                ->default('---')
-                ->sortable()
-                ->badge()->alignment(Alignment::Center)
+            ->columns([
+                Tables\Columns\TextColumn::make('tipo_paciente')
+                    ->label('Estado P.')
+                    ->default('---')
+                    ->sortable()
+                    ->badge()
+                    ->color(function ($record) {
+                        $tipo_paciente = $record->tipo_paciente;
+                        if ($tipo_paciente === "Critico") {
+                            return 'danger';
+                        }
+                        if ($tipo_paciente === "Estable") {
+                            return 'success';
+                        }
+                    })
+                    ->icon(function ($record) {
+                        $tipo_paciente = $record->tipo_paciente;
+                        if ($tipo_paciente === "Critico") {
+                            return 'healthicons-o-bandaged';
+                        }
+                        if ($tipo_paciente === "Estable") {
+                            return 'healthicons-o-happy';
+                        }
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('correlativo')
+                    ->default('---')
+                    ->sortable()
+                    ->badge()->alignment(Alignment::Center)
 
-                ->label('Correlativo')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('diagnostico_paciente')
-                ->icon('healthicons-o-clinical-f')
-                ->default('---')
-                ->sortable()
-                ->limit(15)
-                ->alignment(Alignment::Center)
-                ->label('Diagnóstico')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\ColorColumn::make('color')
-                ->label('Prioridad')
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
+                    ->label('Correlativo')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('diagnostico_paciente')
+                    ->icon('healthicons-o-clinical-f')
+                    ->default('---')
+                    ->sortable()
+                    ->limit(15)
+                    ->alignment(Alignment::Center)
+                    ->label('Diagnóstico')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\ColorColumn::make('color')
+                    ->label('Prioridad')
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('origen_traslado')
-                ->limit(25)
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('origen_traslado')
+                    ->limit(25)
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->label('Origen')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('destino_traslado')
-                ->limit(25)
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
+                    ->label('Origen')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('destino_traslado')
+                    ->limit(25)
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->label('Destino')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('nombres_paciente')
-                ->limit(15)
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
+                    ->label('Destino')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nombres_paciente')
+                    ->limit(15)
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->label('Nombres')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('apellidos_paciente')
-                ->limit(15)
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
+                    ->label('Nombres')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('apellidos_paciente')
+                    ->limit(15)
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->label('Apellidos')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('edad_paciente')
-                ->numeric()
-                ->description(fn(TrasladoSecundarioGestores $record): string => $record->componente_edad)
+                    ->label('Apellidos')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('edad_paciente')
+                    ->numeric()
+                    ->description(fn(TrasladoSecundarioGestores $record): string => $record->componente_edad)
 
-                ->label('Edad')
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
+                    ->label('Edad')
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable()
-                ->sortable(),
-            Tables\Columns\TextColumn::make('ambulancia')
-                ->default('---')
-                ->icon('healthicons-o-ambulance')
-                ->color('primary')
-                ->sortable()->alignment(Alignment::Center)
-                ->label('Ambulancia')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('programado')
-                ->default('---')
-                ->sortable()->alignment(Alignment::Center)
-                ->badge()
-                ->color(function ($record) {
-                    $programado = $record->programado;
-                    if ($programado === "SI") {
-                        return 'success';
-                    }
-                    if ($programado === "NO") {
-                        return 'danger';
-                    }
-                })
-                ->icon(function ($record) {
-                    $programado = $record->programado;
-                    if ($programado === "SI") {
-                        return 'heroicon-o-check-circle';
-                    }
-                    if ($programado === "NO") {
-                        return 'heroicon-o-x-circle';
-                    }
-                })
-                ->label('¿Programado?')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('created_at')
-                ->dateTime()
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('ambulancia')
+                    ->default('---')
+                    ->icon('healthicons-o-ambulance')
+                    ->color('primary')
+                    ->sortable()->alignment(Alignment::Center)
+                    ->label('Ambulancia')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('programado')
+                    ->default('---')
+                    ->sortable()->alignment(Alignment::Center)
+                    ->badge()
+                    ->color(function ($record) {
+                        $programado = $record->programado;
+                        if ($programado === "SI") {
+                            return 'success';
+                        }
+                        if ($programado === "NO") {
+                            return 'danger';
+                        }
+                    })
+                    ->icon(function ($record) {
+                        $programado = $record->programado;
+                        if ($programado === "SI") {
+                            return 'heroicon-o-check-circle';
+                        }
+                        if ($programado === "NO") {
+                            return 'heroicon-o-x-circle';
+                        }
+                    })
+                    ->label('¿Programado?')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
 
-                ->sortable()->alignment(Alignment::Center)
+                    ->sortable()->alignment(Alignment::Center)
 
-                ->label('Fecha de Creación')
-                ->toggleable(isToggledHiddenByDefault: false),
-            Tables\Columns\TextColumn::make('estado')
-                ->default('----')
-                ->badge()
-                ->color(function ($record) {
-                    $estado = $record->estado;
-                    if ($estado === "Pendiente") {
-                        return 'warning';
-                    }
-                    if ($estado === "En Curso") {
-                        return 'info';
-                    }
-                    if ($estado === "Finalizado") {
-                        return 'success';
-                    }
-                    if ($estado === "Cancelado") {
-                        return 'danger';
-                    }
-                })
-                ->icon(function ($record) {
-                    $estado = $record->estado;
-                    if ($estado === "Pendiente") {
-                        return 'heroicon-o-clock';
-                    }
-                    if ($estado === "En Curso") {
-                        return 'heroicon-o-play';
-                    }
-                    if ($estado === "Finalizado") {
-                        return 'heroicon-o-check';
-                    }
-                    if ($estado === "Cancelado") {
-                        return 'heroicon-o-x';
-                    }
-                })
-                ->sortable()->alignment(Alignment::Center)
-                ->label('Estado')
-                ->toggleable(isToggledHiddenByDefault: false)
-                ->searchable(),
-            /////////////////////////////////////////////////////////////////////////////////////////////////
-            Tables\Columns\TextColumn::make('numero_llamada')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('fecha')
-                ->date()
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->default('---')
-                ->sortable(),
-            Tables\Columns\TextColumn::make('hora')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
+                    ->label('Fecha de Creación')
+                    ->toggleable(isToggledHiddenByDefault: false),
+                Tables\Columns\TextColumn::make('estado')
+                    ->default('----')
+                    ->badge()
+                    ->color(function ($record) {
+                        $estado = $record->estado;
+                        if ($estado === "Pendiente") {
+                            return 'warning';
+                        }
+                        if ($estado === "En Curso") {
+                            return 'info';
+                        }
+                        if ($estado === "Finalizado") {
+                            return 'success';
+                        }
+                        if ($estado === "Cancelado") {
+                            return 'danger';
+                        }
+                    })
+                    ->icon(function ($record) {
+                        $estado = $record->estado;
+                        if ($estado === "Pendiente") {
+                            return 'heroicon-o-clock';
+                        }
+                        if ($estado === "En Curso") {
+                            return 'heroicon-o-play';
+                        }
+                        if ($estado === "Finalizado") {
+                            return 'heroicon-o-check';
+                        }
+                        if ($estado === "Cancelado") {
+                            return 'heroicon-o-x';
+                        }
+                    })
+                    ->sortable()->alignment(Alignment::Center)
+                    ->label('Estado')
+                    ->toggleable(isToggledHiddenByDefault: false)
+                    ->searchable(),
+                /////////////////////////////////////////////////////////////////////////////////////////////////
+                Tables\Columns\TextColumn::make('numero_llamada')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('fecha')
+                    ->date()
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->default('---')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('hora')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
-            Tables\Columns\TextColumn::make('tipo_ambulancia')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('operador_nombre')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('operador_numero')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('tipo_traslado')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
+                Tables\Columns\TextColumn::make('tipo_ambulancia')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('operador_nombre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('operador_numero')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tipo_traslado')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
-            Tables\Columns\TextColumn::make('nombre_medico_solicitante')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('telefono_medico_solicitante')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('origen_institucion')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-
-
-
-            Tables\Columns\TextColumn::make('nombre_medico_recibe')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-
-            Tables\Columns\TextColumn::make('telefono_medico_recibe')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
+                Tables\Columns\TextColumn::make('nombre_medico_solicitante')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('telefono_medico_solicitante')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('origen_institucion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
 
-            Tables\Columns\TextColumn::make('sexo_paciente')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
 
-            Tables\Columns\TextColumn::make('registro_expediente')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('tipo_critico')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->searchable(),
-            Tables\Columns\TextColumn::make('edad_gestacional')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->numeric()
-                ->sortable(),
-            Tables\Columns\TextColumn::make('fecha_probable_parto')
-                ->date()
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->sortable(),
-            Tables\Columns\TextColumn::make('dilatacion')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('borramiento')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
+                Tables\Columns\TextColumn::make('nombre_medico_recibe')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
-            Tables\Columns\TextColumn::make('fcf')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('membranas_integras')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('mov_fetales')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('trabajo_parto')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('contracciones')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('frecuencia')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('modo_ventilacion')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('componente_edad')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('bombas_infusion')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('servicio_origen')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('servicio_destino')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('numero_cama_origen')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('numero_cama_destino')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            Tables\Columns\TextColumn::make('updated_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('asunto_traslado')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Asunto del Traslado'),
-
-            // 2. antecendetes_clinicos (asegúrate que en fillable esté escrito igual)
-            Tables\Columns\TextColumn::make('antecendetes_clinicos')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Antecedentes Clínicos'),
-
-            // 3. formula_obstetrica (posible JSON, aquí se muestra como texto)
+                Tables\Columns\TextColumn::make('telefono_medico_recibe')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
 
-            // 4. jvpe_medico_recibe
-            Tables\Columns\TextColumn::make('jvpe_medico_recibe')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('JVPE Médico Recibe'),
+                Tables\Columns\TextColumn::make('sexo_paciente')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
-            // 5. datos_rn_neonato
-            Tables\Columns\TextColumn::make('datos_rn_neonato')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Datos RN/Neonato'),
+                Tables\Columns\TextColumn::make('registro_expediente')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tipo_critico')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('edad_gestacional')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('fecha_probable_parto')
+                    ->date()
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('dilatacion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('borramiento')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
 
-            // 6. requerimientos_oxigenoterapia
-            Tables\Columns\TextColumn::make('requerimientos_oxigenoterapia')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Req. Oxigenoterapia'),
+                Tables\Columns\TextColumn::make('fcf')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('membranas_integras')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('mov_fetales')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('trabajo_parto')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('contracciones')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('frecuencia')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('modo_ventilacion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('componente_edad')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('bombas_infusion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('servicio_origen')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('servicio_destino')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('numero_cama_origen')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('numero_cama_destino')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('asunto_traslado')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Asunto del Traslado'),
 
-            // 7. asistencia_ventilatoria
-            Tables\Columns\TextColumn::make('asistencia_ventilatoria')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Asistencia Ventilatoria'),
+                // 2. antecendetes_clinicos (asegúrate que en fillable esté escrito igual)
+                Tables\Columns\TextColumn::make('antecendetes_clinicos')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Antecedentes Clínicos'),
 
-            // 8. posicion
-            Tables\Columns\TextColumn::make('posicion')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Posición'),
-
-            // 9. fio2
-            Tables\Columns\TextColumn::make('fio2')
-                ->default('---')
-                ->numeric() // si lo manejas como número
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('FiO2'),
+                // 3. formula_obstetrica (posible JSON, aquí se muestra como texto)
 
 
-            // 11. modo_ventilacion
-            Tables\Columns\TextColumn::make('modo_ventilacion')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Modo de Ventilación'),
+                // 4. jvpe_medico_recibe
+                Tables\Columns\TextColumn::make('jvpe_medico_recibe')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('JVPE Médico Recibe'),
 
-            // 12. vt
-            Tables\Columns\TextColumn::make('vt')
-                ->default('---')
-                ->numeric()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('VT'),
+                // 5. datos_rn_neonato
+                Tables\Columns\TextColumn::make('datos_rn_neonato')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Datos RN/Neonato'),
 
-            // 13. volmin
-            Tables\Columns\TextColumn::make('volmin')
-                ->default('---')
-                ->numeric()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Vol. Min'),
+                // 6. requerimientos_oxigenoterapia
+                Tables\Columns\TextColumn::make('requerimientos_oxigenoterapia')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Req. Oxigenoterapia'),
 
-            // 14. relacion_ie
-            Tables\Columns\TextColumn::make('relacion_ie')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Relación I:E'),
+                // 7. asistencia_ventilatoria
+                Tables\Columns\TextColumn::make('asistencia_ventilatoria')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Asistencia Ventilatoria'),
 
-            // 15. fr
-            Tables\Columns\TextColumn::make('fr')
-                ->default('---')
-                ->numeric()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('fr'),
+                // 8. posicion
+                Tables\Columns\TextColumn::make('posicion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Posición'),
 
-            // 16. peep
-            Tables\Columns\TextColumn::make('peep')
-                ->default('---')
-                ->numeric()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('peep'),
+                // 9. fio2
+                Tables\Columns\TextColumn::make('fio2')
+                    ->default('---')
+                    ->numeric() // si lo manejas como número
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('FiO2'),
 
-            // 17. trigger
-            Tables\Columns\TextColumn::make('trigger')
-                ->default('---')
-                ->numeric()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('trigger'),
 
-            // 18. justificacion_cierre
-            Tables\Columns\TextColumn::make('justificacion_cierre')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Justificación de Cierre'),
+                // 11. modo_ventilacion
+                Tables\Columns\TextColumn::make('modo_ventilacion')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Modo de Ventilación'),
 
-            // 19. razon_cierre
-            Tables\Columns\TextColumn::make('razon_cierre')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Razón de Cierre'),
+                // 12. vt
+                Tables\Columns\TextColumn::make('vt')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('VT'),
 
-            // 20. usuario_cierre
-            Tables\Columns\TextColumn::make('usuario_cierre')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Usuario que Cierra'),
+                // 13. volmin
+                Tables\Columns\TextColumn::make('volmin')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Vol. Min'),
 
-            // 21. notas_seguimiento
-            Tables\Columns\TextColumn::make('notas_seguimiento')
-                ->default('---')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable()
-                ->label('Notas de Seguimiento'),
+                // 14. relacion_ie
+                Tables\Columns\TextColumn::make('relacion_ie')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Relación I:E'),
 
-            // 22. user_id (si deseas mostrar el ID del usuario o su nombre)
+                // 15. fr
+                Tables\Columns\TextColumn::make('fr')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('fr'),
 
-        ])
+                // 16. peep
+                Tables\Columns\TextColumn::make('peep')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('peep'),
+
+                // 17. trigger
+                Tables\Columns\TextColumn::make('trigger')
+                    ->default('---')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('trigger'),
+
+                // 18. justificacion_cierre
+                Tables\Columns\TextColumn::make('justificacion_cierre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Justificación de Cierre'),
+
+                // 19. razon_cierre
+                Tables\Columns\TextColumn::make('razon_cierre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Razón de Cierre'),
+
+                // 20. usuario_cierre
+                Tables\Columns\TextColumn::make('usuario_cierre')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Usuario que Cierra'),
+
+                // 21. notas_seguimiento
+                Tables\Columns\TextColumn::make('notas_seguimiento')
+                    ->default('---')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable()
+                    ->label('Notas de Seguimiento'),
+
+                // 22. user_id (si deseas mostrar el ID del usuario o su nombre)
+
+            ])
             ->filters([
                 SelectFilter::make('tipo_paciente')
                     ->options([
@@ -1541,8 +1545,14 @@ class TrasladoSecundarioGestoresResource extends Resource
             ->emptyStateHeading('Parece que no hay registros sin asignar')
             ->paginated([10, 25, 50])
             ->actions([
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
-                Tables\Actions\EditAction::make('Asignar Recurso')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')->icon('healthicons-o-mobile-clinic'),
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning')
+                    ->modalIcon('healthicons-o-mobile-clinic')
+                    ->modalAlignment(Alignment::Center)
+                    ->modalHeading('Traslados Secundarios - Vista'),
+                Tables\Actions\EditAction::make('Asignar Recurso')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')->icon('healthicons-o-mobile-clinic')
+                    ->modalIcon('healthicons-o-mobile-clinic')
+                    ->modalAlignment(Alignment::Center)
+                    ->modalHeading('Traslados Secundarios - Asignación de Recurso'),
             ], position: ActionsPosition::BeforeCells)
             ->defaultGroup('tipo_paciente')
             ->bulkActions([
@@ -1568,7 +1578,7 @@ class TrasladoSecundarioGestoresResource extends Resource
         return [
             'index' => Pages\ListTrasladoSecundarioGestores::route('/'),
             //'create' => Pages\CreateTrasladoSecundarioGestores::route('/create'),
-               //'edit' => Pages\EditTrasladoSecundarioGestores::route('/{record}/edit'),
+            //'edit' => Pages\EditTrasladoSecundarioGestores::route('/{record}/edit'),
         ];
     }
 }

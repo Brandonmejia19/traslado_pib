@@ -89,7 +89,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->label('Doctor de cierre')
                                     ->prefixicon('healthicons-o-doctor')
                                     ->default(Auth::user()->name)
-                                    ->readOnly(), // Este campo se muestra solo para información, no editable
+                                    ->readOnly(),
+                                Forms\Components\TextInput::make('doctor_numero')
+                                    ->readOnly()
+                                    ->prefixicon('heroicon-o-exclamation-circle')
+                                    ->label('PP')
+                                    ->required(), // Este campo se muestra solo para información, no editable
                             ])
                     ])->columns(3),
                 Forms\Components\Section::make('Información')
@@ -875,7 +880,6 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->schema([
                                         Forms\Components\TextArea::make('nota')
                                             ->label('Nota')
-                                            ->maxLength(255)
                                             ->readOnly(fn($state) => !empty($state))
                                             ->columnSpanFull(),
                                         Forms\Components\TextInput::make('usuario')
@@ -891,10 +895,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                                 if (config('app.behind_cdn')) {
                                                     $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
                                                 }
-
-
                                                 $segments = explode('.', $ip); // Divide la IP en segmentos
-
                                                 $lastSegment = end($segments); // Obtiene el último segmento
 
                                                 // Obtiene los últimos 2 dígitos del segmento
@@ -928,7 +929,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                                 }
 
 
-                                               $segments = explode('.', $ip); // Divide la IP en segmentos
+                                                $segments = explode('.', $ip); // Divide la IP en segmentos
 
                                                 $lastSegment = end($segments); // Obtiene el último segmento
 
@@ -1511,9 +1512,15 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->iconButton()
                     ->url(fn(TrasladoSecundarioPropios $record) => route('pdf.traslado', $record->id))
                     ->openUrlInNewTab(),
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning'),
+                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->icon('heroicon-o-eye')->color('warning')
+                ->modalIcon('healthicons-o-mobile-clinic')
+                ->modalAlignment(Alignment::Center)
+                ->modalHeading('Traslados Secundarios - Vista'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')
+                    ->modalIcon('healthicons-o-mobile-clinic')
+                    ->modalAlignment(Alignment::Center)
+                    ->modalHeading('Traslados Secundarios - Edición')
                     ->hidden(fn(TrasladoSecundarioPropios $record) => $record->estado === 'Finalizado'),
                 Tables\Actions\Action::make('CerrarCaso')
                     ->modalWidth(MaxWidth::FourExtraLarge)

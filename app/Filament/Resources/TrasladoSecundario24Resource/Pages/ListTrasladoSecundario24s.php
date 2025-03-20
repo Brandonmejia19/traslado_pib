@@ -10,6 +10,8 @@ use Filament\Resources\Components\Tab;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Support\Enums\IconPosition;
 use Carbon\Carbon;
+use App\Filament\Exports\TrasladoSecundarioHistoricoExporter;
+use Filament\Tables\Actions\ExportAction;
 class ListTrasladoSecundario24s extends ListRecords
 {
     protected static string $resource = TrasladoSecundario24Resource::class;
@@ -23,6 +25,7 @@ class ListTrasladoSecundario24s extends ListRecords
                 ->modifyQueryUsing(
                     fn(Builder $query) =>
                     $query->where('estado', 'En curso')
+                    
                 ),
 
             'Finalizado' => Tab::make()
@@ -49,7 +52,6 @@ class ListTrasladoSecundario24s extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            //   Actions\CreateAction::make(),
         ];
     }
 }
