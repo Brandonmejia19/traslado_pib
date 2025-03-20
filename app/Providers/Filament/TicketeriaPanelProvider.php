@@ -79,7 +79,7 @@ class TicketeriaPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->brandLogo(asset('images/GTS2-removebg-preview.png'))
             // Configura el logo para el modo oscuro
-            ->darkModeBrandLogo(asset('images/logocheques.svg'))
+            ->darkModeBrandLogo(asset('images//GTS3-removebg-preview.png'))
 
             ->favicon(asset('images/logocheques.svg'))
             ->plugins([
