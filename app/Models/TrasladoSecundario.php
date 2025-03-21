@@ -20,8 +20,8 @@ class TrasladoSecundario extends Model
         return LogOptions::defaults()
             ->logOnly([
                 'asunto_traslado',
-                'fecha',
                 'doctor_numero',
+                'fecha',
                 'hora',
                 'ambulancia',
                 'tipo_ambulancia',
@@ -115,7 +115,14 @@ class TrasladoSecundario extends Model
                 'gestor_nombre',
                 'observaciones_origen',
                 'observaciones_destino',
-                'razon_fallecido'
+                'razon_fallecido',
+
+                //ID FK
+                'ambulancia_id',
+                'hospital_listado_id',
+                'isslistados_id',
+                'privado_listados_id',
+                'unidad_listados_id'
             ]);
     }
     protected $fillable = [
@@ -215,7 +222,16 @@ class TrasladoSecundario extends Model
         'gestor_nombre',
         'observaciones_origen',
         'observaciones_destino',
-        'razon_fallecido'
+        'razon_fallecido',
+
+
+        //ID FK
+        'ambulancia_id',
+        'hospital_listado_id',
+        'isslistados_id',
+        'privado_listados_id',
+        'unidad_listados_id'
+
     ];
     protected $casts = [
         'formula_obstetrica' => 'array',
