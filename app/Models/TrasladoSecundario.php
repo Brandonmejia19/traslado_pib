@@ -119,10 +119,14 @@ class TrasladoSecundario extends Model
 
                 //ID FK
                 'ambulancia_id',
-                'hospital_listado_id',
-                'isslistados_id',
-                'privado_listados_id',
-                'unidad_listados_id'
+                'hospital_listado_origen_id',
+                'isslistados_origen_id',
+                'privado_listados_origen_id',
+                'unidad_listados_origen_id',
+                'hospital_listado_destino_id',
+                'isslistados_destino_id',
+                'privado_listados_destino_id',
+                'unidad_listados_destinos_id',
             ]);
     }
     protected $fillable = [
@@ -225,12 +229,16 @@ class TrasladoSecundario extends Model
         'razon_fallecido',
 
 
-        //ID FK
-        'ambulancia_id',
-        'hospital_listado_id',
-        'isslistados_id',
-        'privado_listados_id',
-        'unidad_listados_id'
+       //ID FK
+       'ambulancia_id',
+       'hospital_listado_origen_id',
+       'isslistados_origen_id',
+       'privado_listados_origen_id',
+       'unidad_listados_origen_id',
+       'hospital_listado_destino_id',
+       'isslistados_destino_id',
+       'privado_listados_destino_id',
+       'unidad_listados_destinos_id',
 
     ];
     protected $casts = [

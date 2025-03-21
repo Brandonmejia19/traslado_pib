@@ -129,7 +129,6 @@ class TrasladoSecundario24Resource extends Resource
                                     ) // Cuando el usuario selecciona, actualiza el nombre automáticamente
                                     ->inline()
                                     ->columnSpanFull(),
-
                                 Forms\Components\TextInput::make('tipo_traslado')
                                     ->label('')
                                     ->readOnly()
@@ -463,12 +462,24 @@ class TrasladoSecundario24Resource extends Resource
                                                 'C' => 'C',
                                                 'M' => 'M',
                                             ])->columnspan(1),
-                                        Forms\Components\Select::make('ambulancia')
+                                        Forms\Components\Select::make('ambulancia_id')
                                             ->placeholder('Unidad')
                                             ->label('Unidad')
-                                            ->options(Ambulancias::query()->pluck('unidad', 'unidad'))
+                                            ->options(Ambulancias::query()->pluck('unidad', 'id'))
                                             ->searchable(auth()->user()->cargo != 'Gestor')
                                             ->disabled(auth()->user()->cargo != 'Gestor')
+                                            ->columnspan(1)
+                                            ->reactive()
+                                            ->afterStateUpdated(
+                                                fn($state, callable $set) =>
+                                                $set('ambulancia', Ambulancias::find($state)?->nombre)
+                                            )
+                                            ->prefixicon('healthicons-o-ambulance'),
+                                        Forms\Components\TextInput::make('ambulancia')
+                                            ->placeholder('Unidad')
+                                            ->label('')
+                                            ->readOnly()
+                                            ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
                                             ->columnspan(1)
                                             ->prefixicon('healthicons-o-ambulance'),
                                         Forms\Components\TextInput::make('gestor_numero')
@@ -1556,8 +1567,6 @@ class TrasladoSecundario24Resource extends Resource
                                 if (config('app.behind_cdn')) {
                                     $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
                                 }
-
-
                                 $segments = explode('.', $ip); // Divide la IP en segmentos
 
                                 $lastSegment = end($segments); // Obtiene el último segmento
