@@ -10,6 +10,11 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class Dashboard extends Page
 {
+    public static function shouldRegisterNavigation(): bool
+    {
+        return in_array(auth()->user()?->cargo, ['Administrador', 'Médico', 'Médico APH']);
+    }
+
     protected static string $routePath = '/';
 
     protected static ?int $navigationSort = -2;
