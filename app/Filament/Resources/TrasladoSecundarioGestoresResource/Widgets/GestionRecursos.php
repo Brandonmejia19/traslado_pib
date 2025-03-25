@@ -26,13 +26,13 @@ class GestionRecursos extends BaseWidget
         $totaltraslados = TrasladoSecundario::query()
             ->where('asunto_traslado', operator: 'Transporte de Paciente')
             ->where('estado', operator: 'En curso')
-            ->whereNull('ambulancia')
+            ->whereNull('ambulancia_id')
             ->count();
 
         $totalpendientes = TrasladoSecundario::query()
             ->where('asunto_traslado', 'Traslado de Paciente')
             ->where('estado', 'En curso')
-            ->whereNull('ambulancia')
+            ->whereNull('ambulancia_id')
             ->count();
 
         return [

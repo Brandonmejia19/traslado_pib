@@ -206,7 +206,7 @@
                         <strong>Traslado Origen</strong><br>
                         <span
                             class="badge {{ $traslado->asunto_traslado == 'Finalizado' ? 'badge-success' : 'badge-danger' }}">
-                            {{ $traslado->origen_traslado ?: 'N/A' }}
+                            {{ $traslado->origen_traslado_nombre ?: 'N/A' }}
                         </span>
 
                     </td>
@@ -257,7 +257,7 @@
                         <strong>Traslado Destino</strong><br>
                         <span
                             class="badge {{ $traslado->asunto_traslado == 'Finalizado' ? 'badge-success' : 'badge-danger' }}">
-                            {{ $traslado->destino_traslado ?: 'N/A' }}
+                            {{ $traslado->destino_traslado_nombre ?: 'N/A' }}
                         </span>
                     </td>
 

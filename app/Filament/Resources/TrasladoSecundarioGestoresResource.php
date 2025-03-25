@@ -205,7 +205,8 @@ class TrasladoSecundarioGestoresResource extends Resource
                                 Forms\Components\ColorPicker::make('color')
                                     ->label('.')
                                     ->live(onBlur: true)
-                                    ->columnSpan(1)->extraAttributes(['style' => 'pointer-events: none; width: 0px; height: 0px; border-radius: 0px;']),
+                                    ->columnSpan(1)
+                                    ->extraAttributes(['style' => 'pointer-events: none; width: 0px; height: 0px; border-radius: 0px;']),
                                 Forms\Components\TextInput::make('jvpe_medico_entrega')
                                     ->readOnly()
                                     ->tel()->columnspan(2)
@@ -478,32 +479,22 @@ class TrasladoSecundarioGestoresResource extends Resource
                                                 'C' => 'C',
                                                 'M' => 'M',
                                             ])->columnspan(1),
-                                        Forms\Components\Select::make('ambulancia')
+                                        Forms\Components\Select::make('ambulancia_id')
                                             ->placeholder('Unidad')
                                             ->label('Unidad')
-                                            ->reactive()
-                                            ->afterStateUpdated(function ($state, callable $set) {
-                                                // Actualizar el tipo de ambulancia
-
-
-                                                // Capturar el nombre del usuario autenticado
-                                                $set('gestor_nombre', Auth::user()->name);
-
-                                                // Obtener la IP y extraer el último segmento para 'gestor_numero'
-                                                $ip = Request::ip();
-                                                if (config('app.behind_cdn')) {
-                                                    $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
-                                                }
-                                                $segments = explode('.', $ip);
-                                                $lastDigits = array_slice($segments, -1);
-                                                $gestorNumero = implode('.', $lastDigits);
-                                                $set('gestor_numero', $gestorNumero);
-                                            })
-                                            ->options(Ambulancias::query()->pluck('unidad', 'unidad'))
-                                            ->searchable()
-                                            ->disabled(auth()->user()->cargo === 'Operador')
+                                            ->options(Ambulancias::query()->pluck('unidad', 'id'))
+                                            ->searchable(auth()->user()->cargo != 'Gestor' || auth()->user()->cargo != 'Administrador')
+                                            ->disabled(
+                                                !in_array(auth()->user()->cargo, ['Gestor', 'Administrador'])
+                                            )
                                             ->columnspan(1)
+                                            ->reactive()
+                                            ->afterStateUpdated(
+                                                fn($state, callable $set) =>
+                                                $set('ambulancia', Ambulancias::find($state)?->unidad)
+                                            )
                                             ->prefixicon('healthicons-o-ambulance'),
+
                                         Forms\Components\TextInput::make('gestor_numero')
                                             ->placeholder('Número del Operador')
                                             ->columnspan(1)
@@ -517,6 +508,13 @@ class TrasladoSecundarioGestoresResource extends Resource
                                             ->readOnly()
                                             ->columnspan(1)
                                             ->maxLength(255),
+                                        Forms\Components\TextInput::make(name: 'ambulancia')
+                                            ->placeholder('Unidad')
+                                            ->label('')
+                                            ->readOnly()
+                                            ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
+                                            ->columnspan(1)
+                                            ->prefixicon('healthicons-o-ambulance'),
                                     ])->columnspan('full'),
                             ]),
                         Forms\Components\Fieldset::make('DATOS DE PACIENTE')
@@ -836,7 +834,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->columnspan(4),
 
                             ]),
-                        Forms\Components\Fieldset::make('PARAMETROS DE VENTILACIÓN')
+                            Forms\Components\Fieldset::make('PARAMETROS DE VENTILACIÓN')
                             ->hidden(fn(callable $get) => $get('tipo_paciente') != 'Critico')
                             ->columns(5)
                             ->schema([
@@ -873,14 +871,14 @@ class TrasladoSecundarioGestoresResource extends Resource
                                         'Otros' => 'Otros',
                                     ]),
                                 Forms\Components\TextInput::make(name: 'vt')
-                                    ->readOnly()
+                                    ->disabled()
                                     ->numeric()
                                     ->label('VT')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->prefixicon('healthicons-o-blood-bag')
                                     ->placeholder('VT'),
                                 Forms\Components\TextInput::make(name: 'volmin')
-                                    ->readOnly()
+                                    ->disabled()
                                     ->numeric()
                                     ->label('VOL MIN')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
@@ -897,13 +895,13 @@ class TrasladoSecundarioGestoresResource extends Resource
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->label('Relación I:E'),
                                 Forms\Components\TextInput::make(name: 'fr')
-                                    ->readOnly()
                                     ->prefixicon('healthicons-o-blood-bag')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
+                                    ->disabled()
                                     ->label('fr')
                                     ->placeholder('fr'),
                                 Forms\Components\TextInput::make(name: 'peep')
-                                    ->readOnly()
+                                    ->disabled()
                                     ->label('peep')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->prefixicon('healthicons-o-blood-bag')
@@ -917,95 +915,94 @@ class TrasladoSecundarioGestoresResource extends Resource
                                 Forms\Components\TextInput::make('bombas_infusion')
                                     ->placeholder('#')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
-                                    ->readOnly()
+                                    ->disabled()
                                     ->numeric()
                                     ->prefixicon('healthicons-o-blood-bag'),
                             ]),
 
-                        Forms\Components\Fieldset::make('NOTAS DE SEGUIMIENTO')
+                        Forms\Components\Fieldset::make('Información de Usuario')
+                            ->columns(4)
+                            ->schema([
+
+                                Forms\Components\TextInput::make('operador_numero')
+                                    ->placeholder('Número del Operador')
+                                    ->columnspan(1)
+                                    ->label('Puesto')
+                                    ->default(function () {
+                                        $ip = Request::ip();
+
+                                        if (config('app.behind_cdn')) {
+                                            $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+                                        }
+
+
+                                        $segments = explode('.', $ip); // Divide la IP en segmentos
+
+                                        $lastSegment = end($segments); // Obtiene el último segmento
+
+                                        // Obtiene los últimos 2 dígitos del segmento
+                                        $lastTwoDigits = substr($lastSegment, -2);
+
+                                        return $lastTwoDigits;
+                                    })
+                                    ->readOnly()
+                                    ->prefixicon('healthicons-o-call-centre')
+                                    ->maxLength(length: 255),
+                                Forms\Components\TextInput::make('operador_nombre')
+                                    ->prefixicon('healthicons-o-call-centre')
+                                    ->default(Auth::user()->name)
+                                    ->placeholder('Usuario Asignado')
+                                    ->label('Usuario Asignado')
+                                    ->readOnly()
+                                    ->columnspan(2)
+                                    ->maxLength(255),
+                            ]),
+                        Forms\Components\Section::make('Notas de Seguimiento')
+                            ->collapsible()
                             ->schema([
                                 Forms\Components\Repeater::make('notas_seguimiento')
-                                    ->label('Notas de Seguimiento')
+                                    //   ->label('Notas de Seguimiento - '.fn(callable $get) => 'Información de llamada - ' . ($get('usuario') ?? 'Sin Usuario'))
                                     ->columns(4)
+                                    ->label('')
                                     ->addActionLabel('Agregar nueva Nota')
                                     ->deletable(false)
                                     ->reorderable(false)
                                     ->schema([
                                         Forms\Components\TextArea::make('nota')
-                                            ->label('Nota')
+                                            ->label(fn(callable $get) => 'Nota por ' . auth()->user()->name . ' / PP: ' . ($get('operador_numero') ?? 'Sin Usuario') . ' - ' . ($get('fecha') ?? 'Sin Fecha'))
                                             ->readOnly(fn($state) => !empty($state))
                                             ->columnSpanFull(),
                                         Forms\Components\TextInput::make('usuario')
-                                            ->label('Usuario')
+                                            ->label('')
+                                            ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
                                             ->default(auth()->user()->name)
                                             ->readOnly() // No editable, solo informativo
                                             ->columnSpan(1),
                                         Forms\Components\TextInput::make('operador_numero')
-                                            ->label('PP')
+                                            ->label('')
+                                            ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
                                             ->default(function () {
                                                 $ip = Request::ip();
-
                                                 if (config('app.behind_cdn')) {
                                                     $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
                                                 }
-
-
                                                 $segments = explode('.', $ip); // Divide la IP en segmentos
-
                                                 $lastSegment = end($segments); // Obtiene el último segmento
-
                                                 // Obtiene los últimos 2 dígitos del segmento
                                                 $lastTwoDigits = substr($lastSegment, -2);
-
                                                 return $lastTwoDigits;
                                             })->readOnly() // No editable, solo informativo
                                             ->columnSpan(1),
                                         Forms\Components\DateTimePicker::make('fecha')
-                                            ->label('Fecha')
+                                            ->label('')
+                                            ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
                                             ->default(now()) // Se asigna la fecha y hora actual
                                             ->readOnly() // No editable, solo informativo
                                             ->columnSpan(1),
                                     ])
-                                    ->collapsed() // Para que las entradas no ocupen tanto espacio visualmente
+                                    //->collapsible() // Para que las entradas no ocupen tanto espacio visualmente
                                     ->addActionLabel('Agregar Nota') // Personaliza el botón de agregar
                                     ->columnSpanFull(),
-                                Forms\Components\Fieldset::make('Información de Usuario')
-                                    ->columns(4)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('operador_numero')
-                                            ->placeholder('Número del Operador')
-                                            ->columnspan(1)
-                                            ->numeric()
-                                            ->label('Puesto')
-                                            ->default(function () {
-                                                $ip = Request::ip();
-
-                                                if (config('app.behind_cdn')) {
-                                                    $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
-                                                }
-
-
-                                                $segments = explode('.', $ip); // Divide la IP en segmentos
-
-                                                $lastSegment = end($segments); // Obtiene el último segmento
-
-                                                // Obtiene los últimos 2 dígitos del segmento
-                                                $lastTwoDigits = substr($lastSegment, -2);
-
-                                                return $lastTwoDigits;
-                                            })
-                                            ->readOnly()
-                                            ->prefixicon('healthicons-o-call-centre')
-                                            ->maxLength(length: 255),
-                                        Forms\Components\TextInput::make('operador_nombre')
-                                            ->prefixicon('healthicons-o-call-centre')
-                                            ->default(Auth::user()->name)
-                                            ->placeholder('Usuario Asignado')
-                                            ->label('Usuario Asignado')
-                                            ->readOnly()
-                                            ->columnspan(2)
-                                            ->maxLength(255),
-                                    ]),
                             ]),
 
                     ])
@@ -1066,7 +1063,7 @@ class TrasladoSecundarioGestoresResource extends Resource
 
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('origen_traslado')
+                Tables\Columns\TextColumn::make('origen_traslado_nombre')
                     ->limit(25)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
@@ -1074,7 +1071,7 @@ class TrasladoSecundarioGestoresResource extends Resource
                     ->label('Origen')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('destino_traslado')
+                Tables\Columns\TextColumn::make('destino_traslado_nombre')
                     ->limit(25)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
@@ -1101,15 +1098,13 @@ class TrasladoSecundarioGestoresResource extends Resource
                 Tables\Columns\TextColumn::make('edad_paciente')
                     ->numeric()
                     ->description(fn(TrasladoSecundarioGestores $record): string => $record->componente_edad)
-
                     ->label('Edad')
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
-
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ambulancia')
+                Tables\Columns\TextColumn::make('ambulancia.unidad')
                     ->default('---')
                     ->icon('healthicons-o-ambulance')
                     ->color('primary')
@@ -1570,7 +1565,7 @@ class TrasladoSecundarioGestoresResource extends Resource
     {
         return parent::getEloquentQuery()
             ->where('estado', '!=', 'Finalizado')
-            ->whereNull('ambulancia')
+            ->whereNull('ambulancia_id')
         ;
     }
     public static function getPages(): array

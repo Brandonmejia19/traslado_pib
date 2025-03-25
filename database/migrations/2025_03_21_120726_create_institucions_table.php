@@ -11,19 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('traslado_secundarios', function (Blueprint $table) {
-            $table->char('gestor_numero')->nullable();
-            $table->char('gestor_nombre')->nullable();
-            $table->char('observaciones_origen')->nullable();
-            $table->char('observaciones_destino')->nullable();
-
+        Schema::create('institucions', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('institucions');
     }
 };

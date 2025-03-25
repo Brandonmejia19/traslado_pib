@@ -126,6 +126,8 @@ class TrasladoSecundarioHistorico extends Model
                 'isslistados_destino_id',
                 'privado_listados_destino_id',
                 'unidad_listados_destinos_id',
+                'destino_traslado_nombre',
+                'origen_traslado_nombre',
             ]);
     }
     protected $fillable = [
@@ -238,7 +240,8 @@ class TrasladoSecundarioHistorico extends Model
        'isslistados_destino_id',
        'privado_listados_destino_id',
        'unidad_listados_destinos_id',
-
+       'destino_traslado_nombre',
+       'origen_traslado_nombre',
     ];
     protected $casts = [
         'formula_obstetrica' => 'array',
@@ -273,5 +276,9 @@ class TrasladoSecundarioHistorico extends Model
     public function tipotraslado(): BelongsTo
     {
         return $this->belongsTo(TipoTraslado::class);
+    }
+    public function ambulancia(): BelongsTo
+    {
+        return $this->belongsTo(Ambulancias::class);
     }
 }
