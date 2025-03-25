@@ -2,26 +2,26 @@
 
 return [
 
-    'label' => 'Export :label',
+    'label' => 'Exportar :label',
 
     'modal' => [
 
-        'heading' => 'Export :label',
+        'heading' => 'Exportar :label',
 
         'form' => [
 
             'columns' => [
 
-                'label' => 'Columns',
+                'label' => 'Columnas',
 
                 'form' => [
 
                     'is_enabled' => [
-                        'label' => ':column enabled',
+                        'label' => ':column habilitada',
                     ],
 
                     'label' => [
-                        'label' => ':column label',
+                        'label' => 'Etiqueta de :column',
                     ],
 
                 ],
@@ -33,7 +33,7 @@ return [
         'actions' => [
 
             'export' => [
-                'label' => 'Export',
+                'label' => 'Exportar',
             ],
 
         ],
@@ -44,16 +44,16 @@ return [
 
         'completed' => [
 
-            'title' => 'Export completed',
+            'title' => 'Exportación completada',
 
             'actions' => [
 
                 'download_csv' => [
-                    'label' => 'Download .csv',
+                    'label' => 'Descargar .csv',
                 ],
 
                 'download_xlsx' => [
-                    'label' => 'Download .xlsx',
+                    'label' => 'Descargar .xlsx',
                 ],
 
             ],
@@ -61,17 +61,17 @@ return [
         ],
 
         'max_rows' => [
-            'title' => 'Export is too large',
-            'body' => 'You may not export more than 1 row at once.|You may not export more than :count rows at once.',
+            'title' => 'La exportación es demasiado grande',
+            'body' => 'No puedes exportar más de 1 fila a la vez.|No puedes exportar más de :count filas a la vez.',
         ],
 
         'started' => [
-            'title' => 'Export started',
-            'body' => 'Your export has begun and 1 row will be processed in the background.|Your export has begun and :count rows will be processed in the background.',
+            'title' => 'Exportación iniciada',
+            'body' => 'Tu exportación ha comenzado y se procesará 1 fila en segundo plano.|Tu exportación ha comenzado y se procesarán :count filas en segundo plano.',
         ],
 
     ],
 
-    'file_name' => 'export-:export_id-:model',
+    'file_name' => 'exportacion-:export_id-:model',
 
 ];

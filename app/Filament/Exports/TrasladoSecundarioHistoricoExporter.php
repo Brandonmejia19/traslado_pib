@@ -30,7 +30,7 @@ class TrasladoSecundarioHistoricoExporter extends Exporter
             ExportColumn::make('nombre_medico_solicitante'),
             ExportColumn::make('telefono_medico_solicitante'),
             ExportColumn::make('jvpe_medico_entrega'),
-            ExportColumn::make('origen_traslado')->label('Origen Traslado'),
+            ExportColumn::make('origen_traslado_nombre')->label('Origen Traslado'),
             ExportColumn::make('origen_institucion')->label('Origen Institución'),
             ExportColumn::make('observaciones_origen'),
             ExportColumn::make('servicio_origen')->label('Servicio Origen'),
@@ -39,7 +39,7 @@ class TrasladoSecundarioHistoricoExporter extends Exporter
             ExportColumn::make('nombre_medico_recibe'),
             ExportColumn::make('telefono_medico_recibe'),
             ExportColumn::make('jvpe_medico_recibe'),
-            ExportColumn::make('destino_traslado')->label('Destino Traslado'),
+            ExportColumn::make('destino_traslado_nombre')->label('Destino Traslado'),
             ExportColumn::make('destino_institucion')->label('Destino Institución'),
             ExportColumn::make('observaciones_destino')->label('Observaciones Destino'),
             ExportColumn::make('servicio_destino')->label('Servicio Destino'),
@@ -106,7 +106,7 @@ class TrasladoSecundarioHistoricoExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Listado de Traslados Secundadrios exportado correctamente, ' . number_format($export->successful_rows) . ' ' . str('filas')->plural($export->successful_rows) . ' incluidas.';
+        $body = 'Listado de Traslados Secundarios exportado correctamente, ' . number_format($export->successful_rows) . ' ' . str('filas')->plural($export->successful_rows) . ' incluidas.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
             $body .= ' ' . number_format($failedRowsCount) . ' ' . str('filas')->plural($failedRowsCount) . ' Fallidas';
