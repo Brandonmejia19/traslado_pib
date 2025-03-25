@@ -38,6 +38,7 @@ use Filament\Tables\Enums\FiltersLayout;
 use App\Filament\Exports\TrasladoSecundarioHistoricoExporter;
 use App\Models\Institucion;
 use App\Models\TrasladoSecundario;
+use Filament\Actions\Exports\Exporter;
 use Filament\Tables\Actions\ExportAction;
 Modal::closedByClickingAway(false);
 
@@ -295,8 +296,6 @@ class TrasladoSecundarioResource extends Resource
                                     ->hidden(fn(callable $get) => !in_array($get('origen_institucion'), [5, 6]))
                                     ->prefixicon('healthicons-o-hospital')
                                     ->reactive(),
-
-
                                 Forms\Components\Select::make('servicio_origen')
                                     ->prefixicon('healthicons-o-health-worker-form')
                                     ->searchable()->columnspan(2)
@@ -842,7 +841,7 @@ class TrasladoSecundarioResource extends Resource
                             ->schema([
                                 Forms\Components\ToggleButtons::make('asistencia_ventilatoria')
                                     ->reactive()
-                                    
+
                                     ->default('NO')
                                     ->label('Asistencia Ventilatoria (VM)')
                                     ->options([
@@ -1581,7 +1580,12 @@ class TrasladoSecundarioResource extends Resource
             ->groupingSettingsInDropdownOnDesktop()
             ->defaultSort('created_at', 'desc')
             ->headerActions([
-
+                ExportAction::make()
+                ->exporter(TrasladoSecundarioHistoricoExporter::class)
+                ->hidden(!in_array(auth()->user()->cargo, ['Médico APH', 'Administrador']))
+                ->label('Exportar a Excel')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
             ])
             ->bulkActions([
 

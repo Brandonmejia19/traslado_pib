@@ -199,7 +199,15 @@
                         <strong>Origen</strong><br>
                         <span
                             class="badge {{ $traslado->asunto_traslado == 'Finalizado' ? 'badge-success' : 'badge-danger' }}">
-                            {{ $traslado->origen_institucion ?: 'N/A' }}
+                            {{ $traslado->origen_institucion == 1
+                                ? 'Hospital'
+                                : ($traslado->origen_institucion == 2
+                                    ? 'Unidad de Salud'
+                                    : ($traslado->origen_institucion == 3
+                                        ? 'ISSS'
+                                        : ($traslado->origen_institucion == 4
+                                            ? 'Privado'
+                                            : 'N/A'))) }}
                         </span>
                     </td>
                     <td colspan="2">
@@ -208,9 +216,7 @@
                             class="badge {{ $traslado->asunto_traslado == 'Finalizado' ? 'badge-success' : 'badge-danger' }}">
                             {{ $traslado->origen_traslado_nombre ?: 'N/A' }}
                         </span>
-
                     </td>
-
                 </tr>
                 <!-- Row 2: Número de Cama Origen, Institución Destino y Traslado Destino -->
                 <tr>
@@ -246,11 +252,18 @@
                 <!-- Row 1: Institución Origen, Traslado Origen y Servicio Origen -->
                 <tr>
                     <td>
-
                         <strong>Institución Destino</strong><br>
                         <span
                             class="badge {{ $traslado->asunto_traslado == 'Finalizado' ? 'badge-success' : 'badge-danger' }}">
-                            {{ $traslado->destino_institucion ?: 'N/A' }}
+                            {{ $traslado->destino_institucion == 1
+                                ? 'Hospital'
+                                : ($traslado->destino_institucion == 2
+                                    ? 'Unidad de Salud'
+                                    : ($traslado->destino_institucion == 3
+                                        ? 'ISSS'
+                                        : ($traslado->destino_institucion == 4
+                                            ? 'Privado'
+                                            : 'N/A'))) }}
                         </span>
                     </td>
                     <td colspan="2">
@@ -614,7 +627,7 @@
                     </td>
                     <td>
                         <strong>Usuario de Cierre</strong><br>
-                        {{ $traslado->usuario_cierre ?: 'N/A' }}  ({{ $traslado->doctor_numero ?: 'N/A' }})
+                        {{ $traslado->usuario_cierre ?: 'N/A' }} ({{ $traslado->doctor_numero ?: 'N/A' }})
                     </td>
                 </tr>
                 <!-- Row 2: Estado y User ID -->
