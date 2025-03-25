@@ -281,7 +281,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         }
                                         $set('origen_traslado_nombre', $registro?->nombre);
                                     }),
-                                Forms\Components\TextInput::make('origen_traslado')
+                                Forms\Components\TextInput::make('origen_traslado_nombre')
                                     ->label('Otro Destino / Domicilio')->columnspan(2)
                                     ->placeholder('Nombre de la Institución / Dirección')
                                     ->hidden(fn(callable $get) => !in_array($get('origen_institucion'), [5, 6]))
@@ -380,7 +380,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         }
                                         $set('destino_traslado_nombre', $registro?->nombre);
                                     }),
-                                Forms\Components\TextInput::make('destino_traslado')
+                                Forms\Components\TextInput::make('destino_traslado_nombre')
                                     ->label('Otro Destino / Domicilio')->columnspan(2)
                                     ->placeholder('Nombre de la Institución / Dirección')
                                     ->hidden(fn(callable $get) => !in_array($get('destino_institucion'), [5, 6]))

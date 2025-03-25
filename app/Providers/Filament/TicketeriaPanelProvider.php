@@ -88,6 +88,8 @@ class TicketeriaPanelProvider extends PanelProvider
                     MyImages::make()
                         ->directory('images/backgrounds')
                 ),
+                ActivitylogPlugin::make()->navigationGroup('Mantenimiento')->label('Registro')
+                ->pluralLabel('Registros')->authorize()
                 /*FilamentEditProfilePlugin::make()
                     ->slug('mi-perfil')
                     ->setTitle('Mi Perfil')
