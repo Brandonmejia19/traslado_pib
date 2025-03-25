@@ -1552,7 +1552,6 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->modalAlignment(Alignment::Center)
                     ->modalHeading('Traslados Secundarios - Vista'),
-                //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
                 Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->modalAlignment(Alignment::Center)
