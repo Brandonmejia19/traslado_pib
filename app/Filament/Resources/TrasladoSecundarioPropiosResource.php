@@ -1557,7 +1557,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->modalAlignment(Alignment::Center)
                     ->modalHeading('Traslados Secundarios - Edición')
-                    ->hidden(fn(TrasladoSecundarioPropios $record) => $record->estado === 'Finalizado'),
+                    ->hidden(fn(TrasladoSecundarioPropios $record) => $record->estado != 'En curso'),
                 Tables\Actions\Action::make('CerrarCaso')
                     ->modalWidth(MaxWidth::FourExtraLarge)
                     ->hidden(
