@@ -111,11 +111,11 @@ class Login extends SimplePage
             $lastTwoDigits = substr($lastSegment, -2);
             // Determinar el rol basado en la IP
             // Verificar si el usuario ya tiene el rol "Médico APH" o "Médico"
-            if (!$user->hasRole(['Médico APH', 'Médico','Administrador'])) {
+            if (!$user->hasRole(['APH', 'Médico','Administrador'])) {
                 if ($lastSegment == 36) {
                     $roleName = 'Administrador';
                 } elseif ($lastSegment >= 221 && $lastSegment <= 222) {
-                    $roleName = 'Médico APH';
+                    $roleName = 'APH';
                 } elseif (($lastSegment >= 218 && $lastSegment <= 220) || ($lastSegment >= 224 && $lastSegment <= 226) || ($lastSegment >= 231 && $lastSegment <= 232)) {
                     $roleName = 'Gestor';
                 } elseif (($lastSegment >= 215 && $lastSegment <= 217) || ($lastSegment == 223) || ($lastSegment >= 227 && $lastSegment <= 229) || ($lastSegment >= 164 && $lastSegment <= 163)) {

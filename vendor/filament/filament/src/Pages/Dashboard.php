@@ -12,7 +12,7 @@ class Dashboard extends Page
 {
     public static function shouldRegisterNavigation(): bool
     {
-        return in_array(auth()->user()?->cargo, ['Administrador', 'Médico', 'Médico APH']);
+        return in_array(auth()->user()?->cargo, ['Administrador', 'Médico', 'APH']);
     }
 
     protected static string $routePath = '/';

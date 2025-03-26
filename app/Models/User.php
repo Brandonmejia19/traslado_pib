@@ -60,10 +60,10 @@ class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
     {
 
         if ($panel->getId() === 'admin') {
-            return str_ends_with($this->cargo, 'Médico')|| str_ends_with($this->cargo, 'Administrador');
+            return  str_ends_with($this->cargo, 'Administrador');
         }
         if ($panel->getId() === 'ticketeria') {
-            return str_ends_with($this->cargo, 'Operador') || str_ends_with($this->cargo, 'Médico') || str_ends_with($this->cargo, 'Gestor') || str_ends_with($this->cargo, 'Administrador');
+            return str_ends_with($this->cargo, 'Operador') || str_ends_with($this->cargo, 'Médico') || str_ends_with($this->cargo, 'Gestor') || str_ends_with($this->cargo, 'Administrador')|| str_ends_with($this->cargo, 'Médico')|| str_ends_with($this->cargo,'APH');
         }
         return true;
 
@@ -78,7 +78,7 @@ class User extends Authenticatable implements FilamentUser, LdapAuthenticatable
         return 'guid';
     }
     /**
-     * The attributes that should be cast.
+     * T0he attributes that should be cast.
      *
      * @var array<string, string>
      */

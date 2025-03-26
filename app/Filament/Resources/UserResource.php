@@ -49,7 +49,7 @@ class UserResource extends Resource
                                     'Operador' => 'Operador',
                                     'Médico' => 'Médico',
                                     'Gestor' => 'Gestor',
-                                    'Médico APH' => 'Médico APH',
+                                    'APH' => 'APH',
                                 ]),
                             Forms\Components\TextInput::make('email')
                                 ->email()

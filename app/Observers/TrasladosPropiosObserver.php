@@ -17,7 +17,7 @@ class TrasladosPropiosObserver
     public function created(TrasladoSecundarioPropios $trasladoSecundarioPropios): void
     {
         // OBTENER SOLO USUARIOS CON SESIÓN ACTIVA
-        $recipients = User::role(['Administrador', 'Médico','Médico APH', 'Gestor'])->get();
+        $recipients = User::role(['Administrador', 'Médico', 'APH', 'Gestor'])->get();
 
         foreach ($recipients as $recipient) {
             Notification::make()

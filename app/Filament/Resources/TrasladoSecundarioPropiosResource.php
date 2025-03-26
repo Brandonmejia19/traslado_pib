@@ -1340,7 +1340,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                         Forms\Components\Select::make('razon_fallecido')
                             ->options([
                                 'Antes de llegar a Lugar' => 'Antes de llegar a Lugar',
-                                'Durantes el traslado' => 'Durantes el traslado',
+                                'Durante el traslado' => 'Durante el traslado',
                                 'Durante Entrega' => 'Durante Entrega',
                             ])
                             ->hidden(condition: fn(callable $get) => $get('razon_cierre') != 'Fallecido')

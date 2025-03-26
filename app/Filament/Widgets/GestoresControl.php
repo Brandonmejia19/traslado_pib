@@ -31,8 +31,8 @@ class GestoresControl extends AdvancedBarChartWidget
 
         $query = TrasladoSecundario::query()
             ->select(DB::raw("COALESCE(gestor_nombre, 'Sin asignar') as gestor_nombre"), DB::raw('count(*) as total'))
-            ->where('estado', 'Finalizado' || 'En curso')
-           // ->where('estado', 'En curso')
+            ->whereIn('estado', ['Finalizado', 'En curso'])
+            // ->where('estado', 'En curso')
             ->where(function ($q) use ($start, $now) {
                 $q->whereBetween('created_at', [$start, $now])
                     ->orWhereBetween('updated_at', [$start, $now]);
