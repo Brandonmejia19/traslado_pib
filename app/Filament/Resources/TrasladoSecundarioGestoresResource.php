@@ -34,6 +34,7 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Enums\ActionsPosition;
 use Illuminate\Support\Facades\Request;
+use OwenIt\Auditing\Models\Audit;
 use Psy\VersionUpdater\Installer;
 
 class TrasladoSecundarioGestoresResource extends Resource
@@ -1347,6 +1348,25 @@ class TrasladoSecundarioGestoresResource extends Resource
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->modalAlignment(Alignment::Center)
                     ->modalHeading('Traslados Secundarios - Asignación de Recurso'),
+                Tables\Actions\Action::make('Auditoria')
+                    ->iconButton()
+                    ->icon('heroicon-o-clock')
+                    ->modalHeading('Historial de Auditoría')
+                    ->modalWidth('4xl')
+                    ->color('danger')
+                    ->action(fn() => null) // no guarda nada
+                    ->modalContent(fn($record) => view('auditoria-modal', [
+                        'record' => $record,
+                        'audits' => Audit::where('auditable_id', $record->id)
+                            ->where('auditable_id', $record->id)
+                            ->whereIn('auditable_type', [
+                                'App\Models\TrasladoSecundarioPropios',
+                                'App\Models\TrasladoSecundario',
+                                'App\Models\TrasladoSecundarioGestores',
+                            ])
+                            ->latest()
+                            ->get(),
+                    ]))
             ], position: ActionsPosition::BeforeCells)
             ->defaultGroup('tipo_paciente')
             ->bulkActions([

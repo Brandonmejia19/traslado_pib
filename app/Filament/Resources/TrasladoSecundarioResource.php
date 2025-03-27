@@ -41,6 +41,8 @@ use App\Models\TrasladoSecundario;
 use App\Models\TrasladoSecundarioGestores;
 use Filament\Actions\Exports\Exporter;
 use Filament\Tables\Actions\ExportAction;
+use OwenIt\Auditing\Models\Audit;
+
 Modal::closedByClickingAway(false);
 
 class TrasladoSecundarioResource extends Resource
@@ -1318,6 +1320,25 @@ class TrasladoSecundarioResource extends Resource
                     ->modalAlignment(Alignment::Center)
                     ->modalHeading('Traslados Secundarios - Vista'),
                 //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
+                Tables\Actions\Action::make('Auditoria')
+                ->iconButton()
+                ->icon('heroicon-o-clock')
+                ->modalHeading('Historial de Auditoría')
+                ->modalWidth('4xl')
+                ->action(fn() => null) // no guarda nada
+                ->color('danger')
+                ->modalContent(fn($record) => view('auditoria-modal', [
+                    'record' => $record,
+                    'audits' => Audit::where('auditable_id', $record->id)
+                        ->where('auditable_id', TrasladoSecundarioHistorico::where('id', $record->id)->first()->id)
+                        ->whereIn('auditable_type', [
+                            'App\Models\TrasladoSecundarioPropios',
+                            'App\Models\TrasladoSecundario',
+                            'App\Models\TrasladoSecundarioGestores',
+                        ])
+                        ->latest()
+                        ->get(),
+                ]))
 
             ], position: ActionsPosition::BeforeCells)
             ->defaultGroup('estado')

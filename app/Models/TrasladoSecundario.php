@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\TipoTraslado;
+use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Parallax\FilamentComments\Models\Traits\HasFilamentComments;
 
-class TrasladoSecundario extends Model
+class TrasladoSecundario extends Model implements Auditable
 {
-    use LogsActivity, HasFilamentComments;
+    use LogsActivity, HasFilamentComments,\OwenIt\Auditing\Auditable;
 
     protected $table = 'traslado_secundarios';
     public function getActivitylogOptions(): LogOptions

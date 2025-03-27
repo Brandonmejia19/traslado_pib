@@ -12,9 +12,9 @@ use Parallax\FilamentComments\Models\Traits\HasFilamentComments;
 use OwenIt\Auditing\Contracts\Audit;
 use OwenIt\Auditing\Contracts\Auditable;
 
-class TrasladoSecundarioPropios extends Model
+class TrasladoSecundarioPropios extends Model implements Auditable
 {
-    use LogsActivity, HasFilamentComments;
+    use LogsActivity, HasFilamentComments,\OwenIt\Auditing\Auditable;
 
     protected $table = 'traslado_secundarios';
     public function getActivitylogOptions(): LogOptions

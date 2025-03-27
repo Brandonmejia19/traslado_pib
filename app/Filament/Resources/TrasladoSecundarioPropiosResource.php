@@ -33,8 +33,11 @@ use Filament\Tables\Enums\ActionsPosition;
 use Filament\Support\RawJs;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Support\Facades\Request;
+use OwenIt\Auditing\Contracts\Audit;
+use OwenIt\Auditing\Models\Audit as ModelsAudit;
 use Parallax\FilamentComments\Tables\Actions\CommentsAction;
 use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
+use Spatie\Activitylog\Models\Activity;
 
 class TrasladoSecundarioPropiosResource extends Resource
 {
@@ -1367,8 +1370,27 @@ class TrasladoSecundarioPropiosResource extends Resource
                             ->success()
                             ->sendToDatabase(Auth::user())
                             ->send();
-                    })
+                    }),
                 // ¡Esto cierra automáticamente el modal al completar la acción!,
+                Tables\Actions\Action::make('Auditoria')
+                    ->iconButton()
+                    ->color('danger')
+                    ->icon('heroicon-o-clock')
+                    ->modalHeading('Historial de Auditoría')
+                    ->modalWidth('4xl')
+                    ->action(fn() => null) // no guarda nada
+                    ->modalContent(fn($record) => view('auditoria-modal', [
+                        'record' => $record,
+                        'audits' => ModelsAudit::where('auditable_id', $record->id)
+                            ->where('auditable_id', $record->id)
+                            ->whereIn('auditable_type', [
+                                'App\Models\TrasladoSecundarioPropios',
+                                'App\Models\TrasladoSecundario',
+                                'App\Models\TrasladoSecundarioGestores',
+                            ])
+                            ->latest()
+                            ->get(),
+                    ]))
 
 
 

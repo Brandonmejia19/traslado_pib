@@ -39,6 +39,9 @@ use Livewire\Livewire;
 use Filament\Tables\Actions\ExportAction;
 use Illuminate\Notifications\Action as NotificationsAction;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
+use OwenIt\Auditing\Models\Audit;
+use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
+use Tapp\FilamentAuditing\RelationManagers\AuditsRelationManager;
 
 class TrasladoSecundario24Resource extends Resource
 {
@@ -653,6 +656,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->columns(5)
                                     ->deletable(false)
                                     ->reorderable(false)
+                                    ->defaultItems(1)
                                     ->addable(false)
                                     ->columnspan('full')
                                     ->schema([
@@ -1418,8 +1422,25 @@ class TrasladoSecundario24Resource extends Resource
                         $record->estado != 'En curso' ||
                         !in_array(auth()->user()->cargo, ['APH', 'Administrador', 'Médico', 'Operador'])
                     ),
+                Tables\Actions\Action::make('Auditoria')
+                    ->iconButton()
+                    ->icon('heroicon-o-clock')
+                    ->modalHeading('Historial de Auditoría')
+                    ->modalWidth('4xl')
+                    ->action(fn() => null) // no guarda nada
+                    ->color('danger')
+                    ->modalContent(fn($record) => view('auditoria-modal', [
+                        'record' => $record,
+                        'audits' => Audit::where('auditable_id', $record->id)
+                            ->whereIn('auditable_type', [
+                                'App\Models\TrasladoSecundarioPropios',
+                                'App\Models\TrasladoSecundario',
+                                'App\Models\TrasladoSecundarioGestores',
+                            ])
+                            ->latest()
+                            ->get(),
+                    ]))
             ], position: ActionsPosition::BeforeCells)
-
             ->headerActions([
                 ExportAction::make()
                     ->exporter(TrasladoSecundarioExporter::class)
@@ -1428,6 +1449,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
             ])
+            ->defaultSort('created_at', 'desc')
             ->bulkActions([
 
             ]);
@@ -1436,7 +1458,7 @@ class TrasladoSecundario24Resource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AuditsRelationManager::class,
         ];
     }
     public static function getEloquentQuery(): Builder
@@ -1451,8 +1473,7 @@ class TrasladoSecundario24Resource extends Resource
                                     ->orWhere('updated_at', '>=', Carbon::now()->subDay());
                             });
                     });
-            })
-            ->orderByDesc('created_at');
+            });
     }
 
 

@@ -1,7 +1,7 @@
 <div class="flex items-center justify-center min-h-screen">
     <div class="text-center p-10 bg-transparent">
         <!-- Código de error grande -->
-        <h1 class="text-[120px] font-extrabold text-gray-300 leading-none tracking-wide relative">
+        <h1 class="text-2xl font-extrabold text-gray-300 leading-none tracking-wide relative">
             <span class="absolute text-gray-400 transform -rotate-12 -top-4 -left-6 opacity-50">
                 {{ $this->getCode() }}
             </span>
@@ -17,7 +17,7 @@
         <p class="text-sm text-gray-500 mb-6">
             {{ $this->getDescription() }}
         </p>
-
+    <br>
         <!-- Botones de navegación -->
         <div class="flex justify-center gap-4">
             @if(url()->previous() != url()->current())
