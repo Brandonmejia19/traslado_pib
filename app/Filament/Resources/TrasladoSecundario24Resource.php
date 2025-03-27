@@ -1040,6 +1040,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->default('---')
                     ->sortable()
                     ->badge()->alignment(Alignment::Center)
+                    ->tooltip(fn(string $state): string => " {$state}")
 
                     ->label('Correlativo')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -1047,6 +1048,7 @@ class TrasladoSecundario24Resource extends Resource
                 Tables\Columns\TextColumn::make('diagnostico_paciente')
                     ->icon('healthicons-o-clinical-f')
                     ->default('---')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->limit(15)
                     ->alignment(Alignment::Center)
@@ -1057,6 +1059,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->label('Prioridad')
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
+                    ->tooltip(fn(string $state): string => " {$state}")
 
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
@@ -1064,6 +1067,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->limit(25)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
+                    ->tooltip(fn(string $state): string => " {$state}")
 
                     ->label('Origen')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -1072,6 +1076,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->limit(25)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
+                    ->tooltip(fn(string $state): string => " {$state}")
 
                     ->label('Destino')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -1080,6 +1085,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->limit(15)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
+                    ->tooltip(fn(string $state): string => " {$state}")
 
                     ->label('Nombres')
                     ->toggleable(isToggledHiddenByDefault: false)
@@ -1088,7 +1094,8 @@ class TrasladoSecundario24Resource extends Resource
                     ->limit(15)
                     ->default('---')
                     ->sortable()->alignment(Alignment::Center)
-
+                    ->copyable()
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->label('Apellidos')
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable(),
@@ -1101,9 +1108,10 @@ class TrasladoSecundario24Resource extends Resource
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ambulancia.unidad')
+                Tables\Columns\TextColumn::make('ambulancia')
                     ->default('---')
                     ->icon('healthicons-o-ambulance')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->color('primary')
                     ->sortable()->alignment(Alignment::Center)
                     ->label('Ambulancia')
@@ -1193,6 +1201,7 @@ class TrasladoSecundario24Resource extends Resource
                         return substr($state, 0, 4) . '-' . substr($state, 4, 4);
                     })
                     ->sortable()
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tipo_ambulancia')
@@ -1202,6 +1211,7 @@ class TrasladoSecundario24Resource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('operador_numero')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->default('---')
                     ->sortable()
                     ->icon('heroicon-o-user')
@@ -1209,29 +1219,34 @@ class TrasladoSecundario24Resource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tipo_traslado')
                     ->default('---')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->icon('healthicons-o-ambulance')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('sexo_paciente')
                     ->default('---')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->icon('heroicon-o-user')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tipo_critico')
                     ->default('---')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->icon('healthicons-o-ambulance')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->dateTime()
                     ->sortable()
                     ->label('Fecha de Actualización')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('asunto_traslado')
                     ->default('---')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->icon('heroicon-o-clipboard-document-list')
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -1243,6 +1258,7 @@ class TrasladoSecundario24Resource extends Resource
                 Tables\Columns\TextColumn::make('doctor_numero')
                     ->default('---')
                     ->icon('heroicon-o-user')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
@@ -1255,12 +1271,14 @@ class TrasladoSecundario24Resource extends Resource
                     ->icon('heroicon-o-user')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->searchable()
                     ->label('Gestor Asignado'),
 
                 Tables\Columns\TextColumn::make('usuario_cierre')
                     ->icon('heroicon-o-user')
                     ->default('---')
+                    ->tooltip(fn(string $state): string => " {$state}")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable()
