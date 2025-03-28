@@ -1315,135 +1315,139 @@ class TrasladoSecundario24Resource extends Resource
             // ->deferLoading()
             ->paginated([10, 25, 50])
             ->actions([
-                Tables\Actions\Action::make('descargarPDF')->hidden(auth()->user()->cargo === 'Operador')
-                    ->label('Descargar PDF')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->iconButton()
-                    ->url(fn(TrasladoSecundario $record) => route('pdf.traslado', $record->id))
-                    ->openUrlInNewTab(),
-                // CommentsAction::make()->icon(icon: 'heroicon-o-chat-bubble-left-right')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton(),
+                ActionGroup::make([
+                    Tables\Actions\Action::make('descargarPDF')->hidden(auth()->user()->cargo === 'Operador')
+                        ->label('Descargar PDF')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->url(fn(TrasladoSecundario $record) => route('pdf.traslado', $record->id))
+                        ->openUrlInNewTab(),
+                    // CommentsAction::make()->icon(icon: 'heroicon-o-chat-bubble-left-right')->modalWidth(MaxWidth::SevenExtraLarge)->iconButton(),
 
 
-                Tables\Actions\Action::make('CerrarCaso')
-                    ->modalWidth(MaxWidth::FourExtraLarge)
-                    ->hidden(
-                        fn(TrasladoSecundario $record) =>
-                        $record->estado != 'En curso' ||
-                        !in_array(auth()->user()->cargo, ['Médico', 'Administrador', 'APH'])
-                    )
-                    ->icon('heroicon-o-archive-box-x-mark')
-                    ->color('danger')
-                    ->iconButton()
-                    ->label('Cerrar Caso')
-                    ->requiresConfirmation() // Muestra un modal de confirmación
-                    ->form([
-                        Forms\Components\Textarea::make('justificacion_cierre')
-                            ->label('Justificación de Cierre')
-                            ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
-                            ->required(),
-                        Forms\Components\Select::make('razon_cierre')
-                            ->options([
-                                'Resuelto' => 'Resuelto',
-                                'No Resuelto' => 'No Resuelto',
-                                'Cancelado' => 'Cancelado',
-                                'Retorno' => 'Retorno',
-                                'Fallecido' => 'Fallecido',
-                                'Otro' => 'Otro',
-                            ])
-                            ->placeholder('Seleccione una opción')
-                            ->label('Razón de Cierre')
-                            ->reactive()
-                            ->required(),
-                        Forms\Components\Select::make('razon_fallecido')
-                            ->options([
-                                'Antes de llegar a Lugar' => 'Antes de llegar a Lugar',
-                                'Durante el traslado' => 'Durante el traslado',
-                                'Durante Entrega' => 'Durante Entrega',
-                            ])
-                            ->hidden(condition: fn(callable $get) => $get('razon_cierre') != 'Fallecido')
-                            ->placeholder('Seleccione una opción')
-                            ->label('Fallecido')
-                            ->required(),
-                        Forms\Components\TextInput::make('usuario_cierre')
-                            ->label('Usuario')
-                            ->default(Auth::user()->name)
-                            ->disabled(),
-                        Forms\Components\TextInput::make('doctor_numero')
-                            ->label('PP')
-                            ->default(function () {
-                                $ip = Request::ip();
+                    Tables\Actions\Action::make('CerrarCaso')
+                        ->modalWidth(MaxWidth::FourExtraLarge)
+                        ->hidden(
+                            fn(TrasladoSecundario $record) =>
+                            $record->estado != 'En curso' ||
+                            !in_array(auth()->user()->cargo, ['Médico', 'Administrador', 'APH'])
+                        )
+                        ->icon('heroicon-o-archive-box-x-mark')
+                        ->color('danger')
+                        ->label('Cerrar Caso')
+                        ->requiresConfirmation() // Muestra un modal de confirmación
+                        ->form([
+                            Forms\Components\Textarea::make('justificacion_cierre')
+                                ->label('Justificación de Cierre')
+                                ->placeholder('Por favor, ingrese una justificación para cerrar este caso')
+                                ->required(),
+                            Forms\Components\Select::make('razon_cierre')
+                                ->options([
+                                    'Resuelto' => 'Resuelto',
+                                    'No Resuelto' => 'No Resuelto',
+                                    'Cancelado' => 'Cancelado',
+                                    'Retorno' => 'Retorno',
+                                    'Fallecido' => 'Fallecido',
+                                    'Otro' => 'Otro',
+                                ])
+                                ->placeholder('Seleccione una opción')
+                                ->label('Razón de Cierre')
+                                ->reactive()
+                                ->required(),
+                            Forms\Components\Select::make('razon_fallecido')
+                                ->options([
+                                    'Antes de llegar a Lugar' => 'Antes de llegar a Lugar',
+                                    'Durante el traslado' => 'Durante el traslado',
+                                    'Durante Entrega' => 'Durante Entrega',
+                                ])
+                                ->hidden(condition: fn(callable $get) => $get('razon_cierre') != 'Fallecido')
+                                ->placeholder('Seleccione una opción')
+                                ->label('Fallecido')
+                                ->required(),
+                            Forms\Components\TextInput::make('usuario_cierre')
+                                ->label('Usuario')
+                                ->default(Auth::user()->name)
+                                ->disabled(),
+                            Forms\Components\TextInput::make('doctor_numero')
+                                ->label('PP')
+                                ->default(function () {
+                                    $ip = Request::ip();
 
-                                if (config('app.behind_cdn')) {
-                                    $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
-                                }
-                                $segments = explode('.', $ip); // Divide la IP en segmentos
+                                    if (config('app.behind_cdn')) {
+                                        $ip = Request::server(config('app.behind_cdn_http_header_field', 'HTTP_X_FORWARDED_FOR')) ?? $ip;
+                                    }
+                                    $segments = explode('.', $ip); // Divide la IP en segmentos
 
-                                $lastSegment = end($segments); // Obtiene el último segmento
+                                    $lastSegment = end($segments); // Obtiene el último segmento
 
-                                // Obtiene los últimos 2 dígitos del segmento
-                                $lastTwoDigits = substr($lastSegment, -2);
+                                    // Obtiene los últimos 2 dígitos del segmento
+                                    $lastTwoDigits = substr($lastSegment, -2);
 
-                                return $lastTwoDigits;
-                            })->readOnly() // No editable, solo informativo
-                            ->columnSpan(1), // Solo para información, no editable
-                    ])
-                    ->action(function (array $data, TrasladoSecundario $record) {
-                        // Actualizar los campos
-                        $record->update([
-                            'estado' => 'Finalizado',
-                            'justificacion_cierre' => $data['justificacion_cierre'],
-                            'razon_cierre' => $data['razon_cierre'],
-                            'doctor_numero' => $data['doctor_numero'],
-                            'usuario_cierre' => Auth::user()->name,
-                        ]);
+                                    return $lastTwoDigits;
+                                })->readOnly() // No editable, solo informativo
+                                ->columnSpan(1), // Solo para información, no editable
+                        ])
+                        ->action(function (array $data, TrasladoSecundario $record) {
+                            // Actualizar los campos
+                            $record->update([
+                                'estado' => 'Finalizado',
+                                'justificacion_cierre' => $data['justificacion_cierre'],
+                                'razon_cierre' => $data['razon_cierre'],
+                                'doctor_numero' => $data['doctor_numero'],
+                                'usuario_cierre' => Auth::user()->name,
+                            ]);
 
-                        // Notificación al usuario que cerró el caso
-                        Notification::make()
-                            ->title('Caso cerrado correctamente / Correlativo: ' . $record->correlativo)
-                            ->body('El caso ha sido cerrado correctamente por el usuario: ' . Auth::user()->name)
-                            ->success()
-                            ->sendToDatabase(Auth::user());
-
-                        // Notificación al equipo
-                        $recipients = User::role(['Administrador', 'Médico', 'APH', 'Gestor'])->get();
-
-                        foreach ($recipients as $recipient) {
+                            // Notificación al usuario que cerró el caso
                             Notification::make()
-                                ->title('Traslado Finalizado')
-                                ->icon('heroicon-o-check-circle')
-                                ->iconColor('success')
+                                ->title('Caso cerrado correctamente / Correlativo: ' . $record->correlativo)
+                                ->body('El caso ha sido cerrado correctamente por el usuario: ' . Auth::user()->name)
                                 ->success()
-                                ->body("
+                                ->sendToDatabase(Auth::user());
+
+                            // Notificación al equipo
+                            $recipients = User::role(['Administrador', 'Médico', 'APH', 'Gestor'])->get();
+
+                            foreach ($recipients as $recipient) {
+                                Notification::make()
+                                    ->title('Traslado Finalizado')
+                                    ->icon('heroicon-o-check-circle')
+                                    ->iconColor('success')
+                                    ->success()
+                                    ->body("
                                     ✅ Correlativo: {$record->correlativo} /" . "\n" . "
                                     🏥 Diagnóstico: {$record->diagnostico_paciente} /" . "\n" . "
                                     👤 Finalizado por: {$record->usuario_cierre}/" . "\n" . "
                                     👤 PP: {$record->doctor_numero} /" . "\n" . "
                                     ")
 
-                                ->sendToDatabase($recipient);
+                                    ->sendToDatabase($recipient);
 
-                            event(new DatabaseNotificationsSent($recipient));
-                        }
-                    }),
-                Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()
+                                event(new DatabaseNotificationsSent($recipient));
+                            }
+                        }),
+                    Tables\Actions\ViewAction::make()->modalWidth(MaxWidth::SevenExtraLarge)
+                        ->modalIcon('healthicons-o-mobile-clinic')
+                        ->modalAlignment(Alignment::Center)
+                        ->modalHeading('Traslados Secundarios - Vista')
+                        ->icon('heroicon-o-eye')->color('warning'),
+                    //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
+
+                ]),
+                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->color('primary')
                     ->modalIcon('healthicons-o-mobile-clinic')
                     ->modalAlignment(Alignment::Center)
-                    ->modalHeading('Traslados Secundarios - Vista')
-                    ->icon('heroicon-o-eye')->color('warning'),
-                //   Tables\Actions\CreateAction::make()->modalWidth(MaxWidth::SixExtraLarge),
-                Tables\Actions\EditAction::make()->modalWidth(MaxWidth::SevenExtraLarge)->iconButton()->color('primary')
-                    ->modalIcon('healthicons-o-mobile-clinic')
-                    ->modalAlignment(Alignment::Center)
+                    ->iconButton()
                     ->modalHeading('Traslados Secundarios - Edición')
                     ->hidden(
                         fn(TrasladoSecundario $record) =>
                         $record->estado != 'En curso' ||
                         !in_array(auth()->user()->cargo, ['APH', 'Administrador', 'Médico', 'Operador'])
                     ),
-                Tables\Actions\Action::make('Auditoria')
-                    ->iconButton()
+                Tables\Actions\Action::make('Historial')
                     ->icon('heroicon-o-clock')
-                    ->modalHeading('Historial de Auditoría')
+                    ->iconButton()
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Cerrar')
+                    ->modalHeading('Historial')
                     ->modalWidth('4xl')
                     ->action(fn() => null) // no guarda nada
                     ->color('danger')
