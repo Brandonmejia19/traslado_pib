@@ -61,7 +61,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                             ->mask('99999999')
                             ->numeric()
                             ->prefixicon('healthicons-o-call-centre')
-                            ->maxLength(255),
+                            ->maxLength(250),
                         Forms\Components\Fieldset::make('Cierre de Caso')
                             ->hidden(
                                 fn(callable $get) =>
@@ -168,7 +168,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->label('Nombre médico solicitante')
                                     ->prefixicon('healthicons-o-doctor')
                                     ->columnSpan(2)
-                                    ->maxLength(255),
+                                    ->maxLength(250),
 
                                 Forms\Components\TextInput::make('telefono_medico_solicitante')
                                     ->prefixicon('healthicons-o-phone')
@@ -177,7 +177,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->tel()
                                     ->columnSpan(2)
                                     ->placeholder('0000-0000')
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\Select::make('prioridad')
                                     ->prefixIcon('heroicon-o-exclamation-triangle')
                                     ->options([
@@ -216,11 +216,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->live()
                                     ->columnSpan(1)->extraAttributes(['style' => 'pointer-events: none; width: 0px; height: 0px; border-radius: 0px;']),
                                 Forms\Components\TextInput::make('jvpe_medico_entrega')
+                                    ->mask('9999999')
                                     ->tel()->columnspan(2)
                                     ->label('JVPE médico solicitante')
                                     ->placeholder('JVPE')
                                     ->prefixicon('healthicons-o-stethoscope')
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                             ]),
 
 
@@ -311,12 +312,16 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ]),
                                 Forms\Components\TextInput::make('numero_cama_origen')
                                     ->disabled(fn(callable $get) => in_array($get('origen_institucion'), [5, 6]))
+                                    ->mask('9999')
                                     ->numeric()->columnspan(1)
                                     ->prefixicon('healthicons-o-hospitalized')
+                                    ->maxLength(4)
                                     ->placeholder('Número de Cama')
                                     ->label('Número de Cama'),
                                 Forms\Components\Textarea::make('observaciones_origen')
+
                                     ->autosize()
+                                    ->maxLength(250)
                                     ->columnspan(1)
                                     ->placeholder('Observaciones')
                                     ->label('Observaciones'),
@@ -408,13 +413,16 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ]),
                                 Forms\Components\TextInput::make('numero_cama_destino')
                                     ->disabled(fn(callable $get) => in_array($get('destino_institucion'), [5, 6]))
+                                    ->mask('9999')
+                                    ->maxLength(4)
                                     ->numeric()->columnspan(1)
                                     ->hidden(fn(callable $get) => $get('asunto_traslado') != 'Traslado de Paciente')
                                     ->prefixicon('healthicons-o-hospitalized')
                                     ->placeholder('Número de Cama')
                                     ->label('Número de Cama')
-                                    ->maxLength(3),
+                                   ,
                                 Forms\Components\Textarea::make('observaciones_destino')
+                                    ->maxLength(250)
                                     ->autosize()
                                     ->columnspan(1)
                                     ->placeholder('Observaciones')
@@ -424,20 +432,21 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->label('Nombre médico o persona receptora')->columnspan(2)
 
                                     ->prefixicon('healthicons-o-doctor')
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\TextInput::make('jvpe_medico_recibe')
+                                    ->mask('9999999')
                                     ->tel()->columnspan(1)
                                     ->label('JVPE médico receptor')
                                     ->placeholder('JVPE')
                                     ->prefixicon('healthicons-o-stethoscope')
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\TextInput::make('telefono_medico_recibe')
                                     ->tel()->columnspan(1)
                                     ->mask('99999999')
                                     ->label('Teléfono médico receptor')
                                     ->placeholder('0000-0000')
                                     ->prefixicon('healthicons-o-phone')
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\TextInput::make('origen_traslado_nombre')
                                     ->label('')->columnspan(2)
                                     ->extraAttributes(['style' => 'display: none;'])///OCULTAR PERO AUN GUARDA
@@ -533,7 +542,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                             ->label('Gestor Asignado')
                                             ->readOnly()
                                             ->columnspan(1)
-                                            ->maxLength(255),
+                                            ->maxLength(250),
                                         Forms\Components\TextInput::make('ambulancia')
                                             ->placeholder('Unidad')
                                             ->label('')
@@ -550,12 +559,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->prefixicon('healthicons-o-person')
                                     ->columnspan(2)
                                     ->placeholder('Nombres del Paciente')
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\TextInput::make('apellidos_paciente')
                                     ->placeholder('Apellidos del Paciente')
                                     ->prefixicon('healthicons-o-person')
                                     ->columnspan(2)
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\TextInput::make('edad_paciente')
                                     ->label('Edad')
                                     ->mask('999')
@@ -586,12 +595,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                 Forms\Components\TextArea::make('registro_expediente')
                                     ->placeholder('Registro de Expediente')
                                     ->columnspan(4)
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                                 Forms\Components\TextInput::make('diagnostico_paciente')
                                     ->required()
                                     ->prefixicon('healthicons-o-clinical-f')
                                     ->placeholder('Diagnóstico del Paciente')
-                                    ->maxLength(255)
+                                    ->maxLength(250)
                                     ->columnspan(4),
                             ]),
                         Forms\Components\Fieldset::make('ESTADO DE PACIENTE')
@@ -638,6 +647,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ])
                                     ->columnspan(3),
                                 Forms\Components\Textarea::make('antecendetes_clinicos')
+                                    ->maxLength(250)
                                     ->label('Antecedentes Clínicos')
                                     ->placeholder('Antecedentes Clínicos')
                                     ->columnSpanFull(),
@@ -684,11 +694,11 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     Forms\Components\TextInput::make('dilatacion')
                                         ->placeholder('0 cm')
                                         ->prefixicon('healthicons-o-blood-pressure')
-                                        ->maxLength(255),
+                                        ->maxLength(250),
                                     Forms\Components\TextInput::make('borramiento')
                                         ->placeholder('0%')
                                         ->prefixicon('healthicons-o-heart')
-                                        ->maxLength(255),
+                                        ->maxLength(250),
                                     Forms\Components\TimePicker::make('hora_obstetrica')
                                         ->default(fn() => Carbon::now()->format('H:i'))
                                         ->prefixicon('heroicon-o-clock'),
@@ -696,7 +706,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         ->prefixicon('healthicons-o-lungs')
                                         ->placeholder('0 ppm')
                                         ->label('fcf')
-                                        ->maxLength(255),
+                                        ->maxLength(250),
                                     Forms\Components\ToggleButtons::make('membranas_integras')
                                         ->label('¿Membranas Integras?')
                                         ->options(['SI' => 'SI', 'NO' => 'NO'])
@@ -714,12 +724,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                         ->placeholder('0')
                                         ->prefixicon('healthicons-o-blood-pressure')
                                         ->hidden(fn(callable $get) => $get('trabajo_parto') != 'SI')
-                                        ->maxLength(255),
+                                        ->maxLength(250),
                                     Forms\Components\TextInput::make('frecuencia')
                                         ->prefixicon('healthicons-o-heart')
                                         ->placeholder('0 ppm')
                                         ->hidden(fn(callable $get) => $get('trabajo_parto') != 'SI')
-                                        ->maxLength(255),
+                                        ->maxLength(250),
                                     Forms\Components\Select::make('posicion')
                                         ->prefixicon('healthicons-o-baby-0203-alt')
                                         ->placeholder(placeholder: 'Posición')
@@ -732,6 +742,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                             'Otro' => 'Otro',
                                         ]),
                                     Forms\Components\Textarea::make('datos_rn_neonato')
+                                        ->maxLength(250)
                                         ->label('Datos del RN / Neonato')
                                         ->placeholder('Datos del RN / Neonato')
                                         ->columnSpanFull(),
@@ -802,8 +813,10 @@ class TrasladoSecundarioPropiosResource extends Resource
                             ->columns(5)
                             ->schema([
                                 Forms\Components\TextInput::make(name: 'fio2')
+                                    ->mask('999')
                                     ->numeric()
                                     ->label('Fio2')
+                                    ->maxLength(length: 3)
                                     ->columnSpan(1)
                                     ->prefixicon('healthicons-o-oxygen-tank')
                                     ->placeholder('Fio2'),
@@ -893,10 +906,12 @@ class TrasladoSecundarioPropiosResource extends Resource
                                 Forms\Components\TextInput::make(name: 'fr')
                                     ->prefixicon('healthicons-o-blood-bag')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
-                                    ->label('fr')
+                                ->maxLength(length: 3)
+                                ->label('fr')
                                     ->placeholder('fr'),
                                 Forms\Components\TextInput::make(name: 'peep')
-                                    ->label('peep')
+                                ->maxLength(length: 3)
+                                ->label('peep')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
                                     ->prefixicon('healthicons-o-blood-bag')
                                     ->placeholder('peep'),
@@ -908,7 +923,8 @@ class TrasladoSecundarioPropiosResource extends Resource
                                 Forms\Components\TextInput::make('bombas_infusion')
                                     ->placeholder('#')
                                     ->hidden(condition: fn(callable $get) => $get('asistencia_ventilatoria') != 'SI')
-                                    ->numeric()
+                                ->maxLength(length: 3)
+                                ->numeric()
                                     ->prefixicon('healthicons-o-blood-bag'),
 
 
@@ -941,7 +957,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     })
                                     ->readOnly()
                                     ->prefixicon('healthicons-o-call-centre')
-                                    ->maxLength(length: 255),
+                                    ->maxLength(length: 250),
                                 Forms\Components\TextInput::make('operador_nombre')
                                     ->prefixicon('healthicons-o-call-centre')
                                     ->default(Auth::user()->name)
@@ -949,7 +965,7 @@ class TrasladoSecundarioPropiosResource extends Resource
                                     ->label('Usuario Asignado')
                                     ->readOnly()
                                     ->columnspan(2)
-                                    ->maxLength(255),
+                                    ->maxLength(250),
                             ]),
                         Forms\Components\Section::make('Notas de Seguimiento')
                             ->collapsible()
