@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ambulancias extends Model
 {
+    //COMENTARIO
     protected $fillable = [
         'unidad',
         'placa',
